@@ -13,6 +13,7 @@ from boveda import Boveda
 from editor import GestorDePestanas
 from estilo import obtener_hoja_estilo_actual, obtener_tema_actual
 from iconos import cargar_icono
+from ventana_busqueda import VentanaBusqueda
 
 INTERVALO_CHEQUEO_MEDIANOCHE_MS = 30_000
 TAMANO_ICONO_BARRA_ESTADO = 14
@@ -21,6 +22,7 @@ SECUENCIAS_ATAJOS = [
     ("Ctrl+N", "_crear_nota_nueva"),
     ("Ctrl+W", "_cerrar_pestana_actual"),
     ("Ctrl+Shift+T", "_reabrir_ultima_cerrada"),
+    ("Ctrl+Shift+F", "_abrir_busqueda_texto"),
     ("Ctrl+Tab", "_siguiente_pestana"),
     ("Ctrl+=", "_zoom_actual_aumentar"),
     ("Ctrl++", "_zoom_actual_aumentar"),
@@ -115,6 +117,10 @@ class VentanaPrincipal(QMainWindow):
 
     def _reabrir_ultima_cerrada(self) -> None:
         self.gestor_pestanas.reabrir_ultima_cerrada()
+
+    def _abrir_busqueda_texto(self) -> None:
+        ventana = VentanaBusqueda(self.boveda, self.gestor_pestanas)
+        ventana.exec()
 
     def _siguiente_pestana(self) -> None:
         self.gestor_pestanas.siguiente_pestana()

@@ -13,6 +13,7 @@ TEMA_OSCURO = {
     "borde": "#1a1a1a",
     "resaltado_fila": "#3a3d41",
     "seleccion_texto": "#3a4b5c",
+    "resaltado_busqueda": "#6b5220",
 }
 
 TEMA_CLARO = {
@@ -23,6 +24,7 @@ TEMA_CLARO = {
     "borde": "#d0d0d0",
     "resaltado_fila": "#dcdcdc",
     "seleccion_texto": "#cce4ff",
+    "resaltado_busqueda": "#f5d98a",
 }
 
 

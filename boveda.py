@@ -7,6 +7,7 @@ import os
 import tempfile
 from datetime import date, datetime
 from pathlib import Path
+from typing import NamedTuple
 
 from configuracion import cargar_configuracion, guardar_configuracion
 from fechas import calcular_ultimos_siete_dias, nombre_mes
@@ -16,6 +17,12 @@ registrador = logging.getLogger("edgnotas")
 CARPETA_BASE = Path.home() / "Documents"
 NOMBRE_CARPETA_POR_DEFECTO = "Notas"
 FORMATO_HORA_ARCHIVO = "%H-%M-%S"
+
+
+class CoincidenciaBusqueda(NamedTuple):
+    ruta: Path
+    numero_linea: int
+    texto_linea: str
 
 
 def etiqueta_hora_nota(ruta: Path) -> str:
@@ -149,3 +156,29 @@ class Boveda:
                 anios.append((int(carpeta_anio.name), meses))
 
         return anios
+
+    def buscar_texto(self, patron: str, sensible_a_mayusculas: bool = False) -> list[CoincidenciaBusqueda]:
+        """Busca `patron` en el contenido de todas las notas, más reciente primero.
+
+        Una entrada por línea con coincidencia, no por archivo: una nota con el
+        patrón en varias líneas aparece varias veces.
+        """
+        if not patron:
+            return []
+
+        patron_comparacion = patron if sensible_a_mayusculas else patron.lower()
+        coincidencias = []
+
+        for ruta in sorted(self.ruta_raiz.rglob("*.md"), reverse=True):
+            try:
+                texto_archivo = ruta.read_text(encoding="utf-8")
+            except OSError:
+                registrador.exception("No se pudo leer %s durante la búsqueda", ruta)
+                continue
+
+            for numero_linea, linea in enumerate(texto_archivo.splitlines(), start=1):
+                linea_comparacion = linea if sensible_a_mayusculas else linea.lower()
+                if patron_comparacion in linea_comparacion:
+                    coincidencias.append(CoincidenciaBusqueda(ruta, numero_linea, linea))
+
+        return coincidencias

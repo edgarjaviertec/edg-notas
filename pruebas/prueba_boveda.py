@@ -99,3 +99,91 @@ def test_elegir_carpeta_libre_adopta_carpeta_vacia(tmp_path, monkeypatch):
     boveda = Boveda()
 
     assert boveda.ruta_raiz.name == "Notas"
+
+
+def test_buscar_texto_encuentra_coincidencia_con_numero_de_linea_correcto(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+    carpeta_dia = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_dia.mkdir(parents=True)
+    ruta = carpeta_dia / "2026-09-19_10-00-00.md"
+    ruta.write_text("primera linea\nsegunda linea con reunion\ntercera linea", encoding="utf-8")
+
+    coincidencias = boveda.buscar_texto("reunion")
+
+    assert len(coincidencias) == 1
+    assert coincidencias[0].ruta == ruta
+    assert coincidencias[0].numero_linea == 2
+    assert coincidencias[0].texto_linea == "segunda linea con reunion"
+
+
+def test_buscar_texto_es_insensible_a_mayusculas_por_defecto(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+    carpeta_dia = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_dia.mkdir(parents=True)
+    (carpeta_dia / "2026-09-19_10-00-00.md").write_text("Reunion importante", encoding="utf-8")
+
+    coincidencias = boveda.buscar_texto("reunion")
+
+    assert len(coincidencias) == 1
+
+
+def test_buscar_texto_sensible_a_mayusculas_cuando_se_pide(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+    carpeta_dia = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_dia.mkdir(parents=True)
+    (carpeta_dia / "2026-09-19_10-00-00.md").write_text("Reunion importante", encoding="utf-8")
+
+    coincidencias = boveda.buscar_texto("reunion", sensible_a_mayusculas=True)
+
+    assert coincidencias == []
+
+
+def test_buscar_texto_retorna_una_entrada_por_cada_linea_con_coincidencia(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+    carpeta_dia = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_dia.mkdir(parents=True)
+    ruta = carpeta_dia / "2026-09-19_10-00-00.md"
+    ruta.write_text("reunion con juan\notra linea\nreunion con maria", encoding="utf-8")
+
+    coincidencias = boveda.buscar_texto("reunion")
+
+    assert [coincidencia.numero_linea for coincidencia in coincidencias] == [1, 3]
+
+
+def test_buscar_texto_ordena_del_mas_reciente_al_mas_viejo(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+
+    carpeta_vieja = boveda.ruta_carpeta_dia(date(2026, 1, 1))
+    carpeta_vieja.mkdir(parents=True)
+    ruta_vieja = carpeta_vieja / "2026-01-01_09-00-00.md"
+    ruta_vieja.write_text("reunion vieja", encoding="utf-8")
+
+    carpeta_nueva = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_nueva.mkdir(parents=True)
+    ruta_nueva = carpeta_nueva / "2026-09-19_09-00-00.md"
+    ruta_nueva.write_text("reunion nueva", encoding="utf-8")
+
+    coincidencias = boveda.buscar_texto("reunion")
+
+    assert [coincidencia.ruta for coincidencia in coincidencias] == [ruta_nueva, ruta_vieja]
+
+
+def test_buscar_texto_con_patron_vacio_retorna_lista_vacia(tmp_path, monkeypatch):
+    _preparar_boveda_aislada(tmp_path, monkeypatch)
+
+    boveda = Boveda()
+    carpeta_dia = boveda.ruta_carpeta_dia(date(2026, 9, 19))
+    carpeta_dia.mkdir(parents=True)
+    (carpeta_dia / "2026-09-19_10-00-00.md").write_text("algo de texto", encoding="utf-8")
+
+    assert boveda.buscar_texto("") == []
