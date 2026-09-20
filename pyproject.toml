@@ -1,0 +1,17 @@
+[project]
+name = "edgnotas"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "PySide6>=6.7",
+]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+python_files = ["prueba_*.py"]

@@ -1,0 +1,79 @@
+# Archivos del sistema operativo (macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Archivos temporales de carpetas de macOS
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+
+# Archivos específicos de tu configuración anterior
+.claude.md
+
+# Entornos virtuales (NUNCA se deben subir al repositorio)
+.venv/
+venv/
+env/
+ENV/
+bin/
+include/
+lib/
+lib64/
+
+# Caché de Python y archivos compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribución y empaquetado
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Variables de entorno y secretos (Contraseñas, llaves API)
+.env
+.env.secret
+.env.shared
+
+# Pruebas y cobertura de código
+htmlcov/
+.tox/
+.nosexy/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Configuración de editores comunes (Opcional pero recomendado)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
