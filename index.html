@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#eeeeee" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#252526" media="(prefers-color-scheme: dark)">
+    <title>EdgNotas</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <div class="aplicacion" id="aplicacion" data-pantalla="hoy">
+
+        <div class="panel-listas" id="panel-listas">
+
+            <section class="seccion-lista seccion-hoy" aria-labelledby="titulo-hoy">
+                <header class="encabezado-seccion">
+                    <div class="encabezado-seccion-textos">
+                        <h2 class="encabezado-seccion-titulo" id="titulo-hoy">Hoy</h2>
+                        <span class="encabezado-seccion-fecha" id="fecha-hoy"></span>
+                    </div>
+                    <button class="boton-redondo" id="boton-nueva-nota" type="button" aria-label="Nueva nota">
+                        <span class="icono" data-icono="nuevaNota" aria-hidden="true"></span>
+                    </button>
+                </header>
+                <button class="boton-buscar" type="button" data-accion="abrir-buscador">
+                    <span class="icono" data-icono="buscar" aria-hidden="true"></span>
+                    <span>Buscar en las notas</span>
+                </button>
+                <ul class="lista-notas" id="lista-hoy"></ul>
+                <div class="lista-vacia" id="hoy-vacio">
+                    <p class="lista-vacia-texto">Todavía no hay notas hoy.</p>
+                    <button class="boton-principal" id="boton-empezar" type="button">Empezar a escribir</button>
+                </div>
+            </section>
+
+            <section class="seccion-lista seccion-semana" aria-labelledby="titulo-semana">
+                <header class="encabezado-seccion">
+                    <button class="encabezado-seccion-alternar" id="alternar-semana" type="button" aria-expanded="true" aria-controls="lista-semana">
+                        <h2 class="encabezado-seccion-titulo" id="titulo-semana">Esta semana</h2>
+                    </button>
+                </header>
+                <button class="boton-buscar" type="button" data-accion="abrir-buscador">
+                    <span class="icono" data-icono="buscar" aria-hidden="true"></span>
+                    <span>Buscar en las notas</span>
+                </button>
+                <ul class="lista-dias" id="lista-semana"></ul>
+            </section>
+
+            <section class="seccion-lista seccion-historial" aria-labelledby="titulo-historial">
+                <header class="encabezado-seccion">
+                    <h2 class="encabezado-seccion-titulo" id="titulo-historial">Historial</h2>
+                </header>
+                <button class="boton-buscar" type="button" data-accion="abrir-buscador">
+                    <span class="icono" data-icono="buscar" aria-hidden="true"></span>
+                    <span>Buscar en las notas</span>
+                </button>
+                <div class="arbol-historial" id="arbol-historial"></div>
+            </section>
+
+        </div>
+
+        <div class="panel-editor" id="panel-editor">
+            <div class="pestanas" id="pestanas" role="tablist" aria-label="Notas abiertas"></div>
+            <header class="encabezado-editor">
+                <button class="boton-volver" id="boton-volver" type="button">
+                    <span class="icono" data-icono="volver" aria-hidden="true"></span>
+                    <span id="texto-volver">Hoy</span>
+                </button>
+                <span class="encabezado-editor-titulo" id="titulo-nota"></span>
+            </header>
+            <div class="editor" id="editor"></div>
+        </div>
+
+        <footer class="barra-estado" id="barra-estado">
+            <span class="barra-estado-texto" id="estado-modo"></span>
+            <span class="barra-estado-texto" id="estado-guardado"></span>
+            <div class="barra-estado-acciones">
+                <button class="boton-texto" id="boton-reiniciar-demo" type="button" hidden>Reiniciar demo</button>
+                <button class="boton-texto" id="boton-exportar" type="button">Exportar respaldo</button>
+            </div>
+        </footer>
+
+        <nav class="barra-inferior" id="barra-inferior" aria-label="Secciones">
+            <button class="barra-inferior-boton" type="button" data-pantalla-destino="hoy" aria-current="page">
+                <span class="icono" data-icono="hoy" aria-hidden="true"></span>
+                <span>Hoy</span>
+            </button>
+            <button class="barra-inferior-boton" type="button" data-pantalla-destino="semana">
+                <span class="icono" data-icono="semana" aria-hidden="true"></span>
+                <span>Semana</span>
+            </button>
+            <button class="barra-inferior-boton" type="button" data-pantalla-destino="historial">
+                <span class="icono" data-icono="historial" aria-hidden="true"></span>
+                <span>Historial</span>
+            </button>
+        </nav>
+
+        <div class="aviso" id="aviso-deshacer" role="status" hidden>
+            <span class="aviso-texto" id="aviso-deshacer-texto"></span>
+            <button class="boton-texto" id="boton-deshacer" type="button">Deshacer</button>
+        </div>
+
+    </div>
+
+    <dialog class="buscador" id="buscador" aria-labelledby="titulo-buscador">
+        <header class="buscador-encabezado">
+            <button class="boton-volver" id="boton-cerrar-buscador" type="button" aria-label="Cerrar búsqueda">
+                <span class="icono" data-icono="volver" aria-hidden="true"></span>
+            </button>
+            <h2 class="solo-lectores" id="titulo-buscador">Buscar en las notas</h2>
+            <input class="buscador-campo" id="campo-busqueda" type="search" placeholder="Buscar en las notas" autocomplete="off" aria-labelledby="titulo-buscador">
+        </header>
+        <p class="buscador-resumen" id="resumen-busqueda" role="status"></p>
+        <ul class="lista-notas" id="resultados-busqueda"></ul>
+    </dialog>
+
+    <template id="plantilla-fila-nota">
+        <li class="fila-nota">
+            <button class="fila-nota-eliminar" type="button" aria-label="Eliminar nota">
+                <span class="icono" data-icono="eliminar" aria-hidden="true"></span>
+                <span>Eliminar</span>
+            </button>
+            <button class="fila-nota-abrir" type="button">
+                <span class="fila-nota-hora"></span>
+                <span class="fila-nota-vista-previa"></span>
+            </button>
+        </li>
+    </template>
+
+    <template id="plantilla-dia">
+        <li class="grupo-dia">
+            <h3 class="grupo-dia-titulo"></h3>
+            <ul class="lista-notas"></ul>
+        </li>
+    </template>
+
+    <template id="plantilla-grupo-historial">
+        <details class="grupo-historial">
+            <summary class="grupo-historial-titulo"></summary>
+            <div class="grupo-historial-contenido"></div>
+        </details>
+    </template>
+
+    <template id="plantilla-pestana">
+        <div class="pestana" role="presentation">
+            <button class="pestana-titulo" type="button" role="tab" aria-selected="false"></button>
+            <button class="pestana-cerrar" type="button" aria-label="Cerrar pestaña">×</button>
+        </div>
+    </template>
+
+    <template id="plantilla-resultado-busqueda">
+        <li>
+            <button class="resultado-busqueda" type="button">
+                <span class="resultado-busqueda-nota"></span>
+                <span class="resultado-busqueda-linea"></span>
+            </button>
+        </li>
+    </template>
+</body>
+</html>

@@ -1,0 +1,804 @@
+/* ==========================================================================
+   CONFIGURACION
+   ========================================================================== */
+
+:root {
+    --color-fondo: #ffffff;
+    --color-fondo-lateral: #eeeeee;
+    --color-fondo-elevado: #ffffff;
+    --color-texto: #1e1e1e;
+    --color-texto-tenue: #666666;
+    --color-borde: #d0d0d0;
+    --color-resaltado: #dcdcdc;
+    --color-seleccion: #cce4ff;
+    --color-linea-activa: #f5f5f5;
+    --color-acento: #1f8a3b;
+    --color-acento-texto: #ffffff;
+    --color-peligro: #c0392b;
+    --color-peligro-texto: #ffffff;
+    --color-velo: rgba(0, 0, 0, 0.35);
+    --sombra-elevada: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+    --fuente-sistema: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fuente-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --tamano-texto: 15px;
+    --tamano-texto-pequeno: 13px;
+    --tamano-texto-diminuto: 11px;
+    /* 16px como mínimo en campos: con menos, Safari iOS hace zoom al enfocarlos */
+    --tamano-texto-editor: 16px;
+    --tamano-titulo: 28px;
+    --tamano-icono: 20px;
+
+    --espacio-1: 4px;
+    --espacio-2: 8px;
+    --espacio-3: 12px;
+    --espacio-4: 16px;
+    --espacio-5: 24px;
+    --alto-toque: 44px;
+    --alto-boton-principal: 48px;
+    --ancho-deslizar-eliminar: 96px;
+    --ancho-barra-lateral: 260px;
+    --ancho-buscador: 640px;
+    --radio: 8px;
+    --radio-grande: 12px;
+    --radio-pastilla: 999px;
+    --duracion-transicion: 150ms;
+    --grosor-borde: 1px;
+    --grosor-foco: 2px;
+    --separacion-minima: 2px;
+    --alto-campo: 40px;
+    --alto-boton-barra-inferior: 52px;
+    --distancia-aviso-movil: 80px;
+    --ancho-minimo-aviso: 320px;
+    --alto-barra-estado: 26px;
+    --alto-boton-texto-compacto: 24px;
+    --relleno-pestana-vertical: 6px;
+    --relleno-pestana-izquierdo: 14px;
+    --margen-lista-vacia: 20vh;
+    --margen-superior-buscador: 12vh;
+    --alto-maximo-buscador: 70vh;
+    --ancho-maximo-buscador: 90vw;
+    --espaciado-letras-titulo: 0.06em;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-fondo: #2b2f33;
+        --color-fondo-lateral: #252526;
+        --color-fondo-elevado: #33373b;
+        --color-texto: #d4d4d4;
+        --color-texto-tenue: #8f8f8f;
+        --color-borde: #1a1a1a;
+        --color-resaltado: #3a3d41;
+        --color-seleccion: #3a4b5c;
+        --color-linea-activa: #30353a;
+        --color-acento: #30d158;
+        --color-acento-texto: #0b2913;
+        --color-peligro: #d9534f;
+        --color-peligro-texto: #ffffff;
+        --color-velo: rgba(0, 0, 0, 0.55);
+        --sombra-elevada: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+}
+
+
+/* ==========================================================================
+   GENERICOS
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+p,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ==========================================================================
+   ELEMENTOS
+   ========================================================================== */
+
+body {
+    background-color: var(--color-fondo-lateral);
+    color: var(--color-texto);
+    font-family: var(--fuente-sistema);
+    font-size: var(--tamano-texto);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+    outline: var(--grosor-foco) solid var(--color-acento);
+    outline-offset: calc(var(--grosor-foco) * -1);
+}
+
+input {
+    font: inherit;
+    color: inherit;
+}
+
+dialog {
+    color: var(--color-texto);
+}
+
+
+/* ==========================================================================
+   OBJETOS
+   ========================================================================== */
+
+/* Móvil: una sola columna; lista o editor ocupan "contenido" por turnos */
+.aplicacion {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+        "contenido"
+        "estado"
+        "inferior";
+    height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+}
+
+
+/* ==========================================================================
+   COMPONENTES
+   ========================================================================== */
+
+/* Iconos (emojis en la v1, definidos en ICONOS) */
+
+.icono {
+    font-size: var(--tamano-icono);
+    line-height: 1;
+}
+
+/* Botones */
+
+.boton-principal {
+    min-height: var(--alto-boton-principal);
+    padding: 0 var(--espacio-5);
+    border-radius: var(--radio-pastilla);
+    background-color: var(--color-acento);
+    color: var(--color-acento-texto);
+    font-weight: 600;
+}
+
+.boton-redondo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--alto-toque);
+    height: var(--alto-toque);
+    flex-shrink: 0;
+    border-radius: var(--radio-pastilla);
+    background-color: var(--color-resaltado);
+}
+
+.boton-texto {
+    min-height: var(--alto-toque);
+    padding: 0 var(--espacio-3);
+    color: var(--color-acento);
+    font-weight: 600;
+}
+
+.boton-volver {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-1);
+    min-height: var(--alto-toque);
+    padding: 0 var(--espacio-3) 0 var(--espacio-2);
+    color: var(--color-acento);
+}
+
+.boton-buscar {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    min-height: var(--alto-campo);
+    margin: 0 var(--espacio-4) var(--espacio-3);
+    padding: 0 var(--espacio-3);
+    border-radius: var(--radio);
+    background-color: var(--color-resaltado);
+    color: var(--color-texto-tenue);
+}
+
+/* Panel de listas: barra lateral en escritorio, pantallas en móvil */
+
+.panel-listas {
+    grid-area: contenido;
+    overflow-y: auto;
+    background-color: var(--color-fondo-lateral);
+}
+
+.seccion-lista {
+    display: none;
+    flex-direction: column;
+    padding-bottom: var(--espacio-4);
+}
+
+[data-pantalla="hoy"] .seccion-hoy,
+[data-pantalla="semana"] .seccion-semana,
+[data-pantalla="historial"] .seccion-historial {
+    display: flex;
+}
+
+[data-pantalla="editor"] .panel-listas {
+    display: none;
+}
+
+.encabezado-seccion {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--espacio-3);
+    padding: var(--espacio-4) var(--espacio-4) var(--espacio-3);
+}
+
+.encabezado-seccion-textos {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-1);
+}
+
+.encabezado-seccion-titulo {
+    font-size: var(--tamano-titulo);
+    font-weight: 700;
+}
+
+.encabezado-seccion-fecha {
+    color: var(--color-texto-tenue);
+    font-family: var(--fuente-mono);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+/* En móvil "Esta semana" es una pantalla, no se colapsa */
+.encabezado-seccion-alternar {
+    cursor: default;
+}
+
+/* Filas de notas */
+
+.fila-nota {
+    position: relative;
+    overflow: hidden;
+    border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.fila-nota-eliminar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espacio-1);
+    width: var(--ancho-deslizar-eliminar);
+    background-color: var(--color-peligro);
+    color: var(--color-peligro-texto);
+    font-size: var(--tamano-texto-pequeno);
+    font-weight: 600;
+}
+
+/* Va encima del botón de eliminar; JS lo desplaza al deslizar */
+.fila-nota-abrir {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espacio-1);
+    width: 100%;
+    min-height: var(--alto-toque);
+    padding: var(--espacio-3) var(--espacio-4);
+    background-color: var(--color-fondo-lateral);
+    transition: transform var(--duracion-transicion) ease-out;
+}
+
+.fila-nota-hora {
+    font-family: var(--fuente-mono);
+    font-weight: 500;
+}
+
+.fila-nota-vista-previa {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-pequeno);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Lista vacía de "Hoy" */
+
+.lista-vacia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--espacio-4);
+    padding: var(--margen-lista-vacia) var(--espacio-5) 0;
+    text-align: center;
+}
+
+.lista-vacia-texto {
+    color: var(--color-texto-tenue);
+}
+
+/* Días de "Esta semana" */
+
+.grupo-dia-titulo {
+    padding: var(--espacio-4) var(--espacio-4) var(--espacio-2);
+    color: var(--color-texto-tenue);
+    font-family: var(--fuente-mono);
+    font-size: var(--tamano-texto-pequeno);
+    font-weight: 600;
+}
+
+/* Árbol del historial: años, meses y días */
+
+.grupo-historial-titulo {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    min-height: var(--alto-toque);
+    padding: 0 var(--espacio-4);
+    list-style: none;
+    cursor: pointer;
+}
+
+.grupo-historial-titulo::-webkit-details-marker {
+    display: none;
+}
+
+.grupo-historial-titulo::before {
+    content: "▸";
+    color: var(--color-texto-tenue);
+}
+
+.grupo-historial[open] > .grupo-historial-titulo::before {
+    content: "▾";
+}
+
+.grupo-historial-contenido {
+    padding-left: var(--espacio-4);
+}
+
+/* Panel del editor */
+
+.panel-editor {
+    grid-area: contenido;
+    display: none;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--color-fondo);
+}
+
+[data-pantalla="editor"] .panel-editor {
+    display: flex;
+}
+
+.pestanas {
+    display: none;
+}
+
+.encabezado-editor {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    padding: var(--espacio-1) var(--espacio-3) var(--espacio-1) 0;
+    border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.encabezado-editor-titulo {
+    overflow: hidden;
+    font-family: var(--fuente-mono);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.editor {
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Barra de estado */
+
+.barra-estado {
+    grid-area: estado;
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-3);
+    min-width: 0;
+    padding: 0 var(--espacio-2) 0 var(--espacio-4);
+    border-top: var(--grosor-borde) solid var(--color-borde);
+    background-color: var(--color-fondo-lateral);
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+.barra-estado-texto {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.barra-estado-acciones {
+    display: flex;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Barra inferior (solo móvil) */
+
+.barra-inferior {
+    grid-area: inferior;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--espacio-1);
+    padding: var(--espacio-1) var(--espacio-2) calc(var(--espacio-1) + env(safe-area-inset-bottom));
+    border-top: var(--grosor-borde) solid var(--color-borde);
+    background-color: var(--color-fondo-lateral);
+}
+
+.barra-inferior-boton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--separacion-minima);
+    min-height: var(--alto-boton-barra-inferior);
+    border-radius: var(--radio-grande);
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-diminuto);
+    font-weight: 500;
+}
+
+.barra-inferior-boton[aria-current="page"] {
+    background-color: var(--color-resaltado);
+    color: var(--color-texto);
+    font-weight: 700;
+}
+
+/* Con el teclado abierto se esconde para dejar espacio al editor */
+.esta-escribiendo .barra-inferior {
+    display: none;
+}
+
+/* Aviso con "Deshacer" */
+
+.aviso {
+    position: fixed;
+    right: var(--espacio-4);
+    bottom: calc(var(--distancia-aviso-movil) + env(safe-area-inset-bottom));
+    left: var(--espacio-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-3);
+    padding: 0 var(--espacio-1) 0 var(--espacio-4);
+    border: var(--grosor-borde) solid var(--color-borde);
+    border-radius: var(--radio-grande);
+    background-color: var(--color-fondo-elevado);
+    box-shadow: var(--sombra-elevada);
+}
+
+/* Buscador: pantalla completa en móvil, ventana en escritorio */
+
+.buscador {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: env(safe-area-inset-top) 0 0;
+    border: none;
+    background-color: var(--color-fondo);
+}
+
+.buscador[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+.buscador::backdrop {
+    background-color: var(--color-velo);
+}
+
+.buscador-encabezado {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-1);
+    padding: var(--espacio-2) var(--espacio-4) var(--espacio-2) 0;
+    border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.buscador-campo {
+    flex-grow: 1;
+    min-height: var(--alto-campo);
+    padding: 0 var(--espacio-3);
+    border: none;
+    border-radius: var(--radio);
+    background-color: var(--color-resaltado);
+    font-size: var(--tamano-texto-editor);
+}
+
+.buscador-resumen {
+    padding: var(--espacio-2) var(--espacio-4);
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+.resultado-busqueda {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-1);
+    width: 100%;
+    padding: var(--espacio-3) var(--espacio-4);
+    border-bottom: var(--grosor-borde) solid var(--color-borde);
+}
+
+.resultado-busqueda-nota {
+    font-family: var(--fuente-mono);
+    font-size: var(--tamano-texto-pequeno);
+    font-weight: 600;
+}
+
+.resultado-busqueda-linea {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--color-texto-tenue);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Escritorio: barra lateral + editor con pestañas, sin barra inferior */
+
+@media (min-width: 768px) {
+    .aplicacion {
+        grid-template-columns: var(--ancho-barra-lateral) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "listas editor"
+            "estado estado";
+    }
+
+    [data-pantalla] .panel-listas {
+        grid-area: listas;
+        display: block;
+        border-right: var(--grosor-borde) solid var(--color-borde);
+    }
+
+    [data-pantalla] .panel-editor {
+        grid-area: editor;
+        display: flex;
+    }
+
+    [data-pantalla] .seccion-hoy {
+        display: none;
+    }
+
+    [data-pantalla] .seccion-semana,
+    [data-pantalla] .seccion-historial {
+        display: flex;
+        padding-bottom: var(--espacio-2);
+    }
+
+    .barra-inferior,
+    .boton-buscar,
+    .encabezado-editor {
+        display: none;
+    }
+
+    .encabezado-seccion {
+        padding: var(--espacio-3) var(--espacio-3) var(--espacio-1);
+    }
+
+    .encabezado-seccion-titulo {
+        color: var(--color-texto-tenue);
+        font-size: var(--tamano-texto-diminuto);
+        font-weight: 600;
+        letter-spacing: var(--espaciado-letras-titulo);
+        text-transform: uppercase;
+    }
+
+    .encabezado-seccion-alternar {
+        display: flex;
+        align-items: center;
+        gap: var(--espacio-1);
+        cursor: pointer;
+    }
+
+    .encabezado-seccion-alternar::before {
+        content: "▾";
+        color: var(--color-texto-tenue);
+        font-size: var(--tamano-texto-diminuto);
+    }
+
+    .encabezado-seccion-alternar[aria-expanded="false"]::before {
+        content: "▸";
+    }
+
+    .grupo-dia-titulo {
+        padding: var(--espacio-2) var(--espacio-3) var(--espacio-1);
+    }
+
+    .fila-nota {
+        border-bottom: none;
+    }
+
+    .fila-nota-abrir {
+        flex-direction: row;
+        align-items: baseline;
+        gap: var(--espacio-2);
+        min-height: 0;
+        padding: var(--espacio-1) var(--espacio-5) var(--espacio-1) var(--espacio-4);
+        transition: none;
+    }
+
+    .fila-nota-abrir:hover,
+    .fila-nota-abrir[aria-current="true"] {
+        background-color: var(--color-resaltado);
+    }
+
+    .fila-nota-hora {
+        font-size: var(--tamano-texto-pequeno);
+    }
+
+    /* En escritorio no se desliza: el botón aparece al pasar el cursor */
+    .fila-nota-eliminar {
+        z-index: 1;
+        display: none;
+        width: var(--espacio-5);
+        background-color: transparent;
+        color: var(--color-texto-tenue);
+    }
+
+    .fila-nota:hover .fila-nota-eliminar,
+    .fila-nota:focus-within .fila-nota-eliminar {
+        display: flex;
+    }
+
+    .fila-nota-eliminar span:last-child {
+        display: none;
+    }
+
+    .grupo-historial-titulo {
+        min-height: 0;
+        padding: var(--espacio-1) var(--espacio-3);
+        font-size: var(--tamano-texto-pequeno);
+    }
+
+    .grupo-historial-titulo:hover {
+        background-color: var(--color-resaltado);
+    }
+
+    .grupo-historial-contenido {
+        padding-left: var(--espacio-3);
+    }
+
+    .pestanas {
+        display: flex;
+        overflow-x: auto;
+        border-bottom: var(--grosor-borde) solid var(--color-borde);
+        background-color: var(--color-fondo-lateral);
+    }
+
+    .pestana {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--color-texto-tenue);
+    }
+
+    .pestana.esta-activa {
+        background-color: var(--color-fondo);
+        color: var(--color-texto);
+        font-weight: 600;
+    }
+
+    .pestana-titulo {
+        padding: var(--relleno-pestana-vertical) var(--espacio-1) var(--relleno-pestana-vertical) var(--relleno-pestana-izquierdo);
+        font-family: var(--fuente-mono);
+        font-size: var(--tamano-texto-pequeno);
+    }
+
+    .pestana-cerrar {
+        padding: 0 var(--espacio-2);
+        color: var(--color-texto-tenue);
+    }
+
+    .pestana-cerrar:hover {
+        color: var(--color-texto);
+    }
+
+    .barra-estado {
+        min-height: var(--alto-barra-estado);
+        padding: 0 var(--espacio-1) 0 var(--espacio-3);
+        font-size: var(--tamano-texto-diminuto);
+    }
+
+    .boton-texto {
+        min-height: var(--alto-boton-texto-compacto);
+    }
+
+    .aviso {
+        right: var(--espacio-4);
+        bottom: var(--espacio-5);
+        left: auto;
+        min-width: var(--ancho-minimo-aviso);
+    }
+
+    .buscador {
+        width: min(var(--ancho-buscador), var(--ancho-maximo-buscador));
+        height: auto;
+        max-height: var(--alto-maximo-buscador);
+        margin: var(--margen-superior-buscador) auto auto;
+        padding: 0;
+        border: var(--grosor-borde) solid var(--color-borde);
+        border-radius: var(--radio-grande);
+        box-shadow: var(--sombra-elevada);
+    }
+
+    .buscador-encabezado {
+        padding: var(--espacio-3);
+    }
+
+    .buscador-encabezado .boton-volver {
+        display: none;
+    }
+
+    .buscador-campo {
+        font-size: var(--tamano-texto);
+    }
+
+    .resultado-busqueda:hover {
+        background-color: var(--color-resaltado);
+    }
+}
+
+
+/* ==========================================================================
+   UTILIDADES
+   ========================================================================== */
+
+[hidden] {
+    display: none !important;
+}
+
+.solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
