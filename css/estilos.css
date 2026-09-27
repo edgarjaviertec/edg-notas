@@ -27,6 +27,7 @@
     /* 16px como mínimo en campos: con menos, Safari iOS hace zoom al enfocarlos */
     --tamano-texto-editor: 16px;
     --tamano-titulo: 28px;
+    --interlineado-editor: 1.6;
     --tamano-icono: 20px;
 
     --espacio-1: 4px;

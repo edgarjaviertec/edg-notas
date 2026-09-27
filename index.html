@@ -20,7 +20,7 @@
                         <h2 class="encabezado-seccion-titulo" id="titulo-hoy">Hoy</h2>
                         <span class="encabezado-seccion-fecha" id="fecha-hoy"></span>
                     </div>
-                    <button class="boton-redondo" id="boton-nueva-nota" type="button" aria-label="Nueva nota">
+                    <button class="boton-redondo" id="boton-nueva-nota" type="button" data-accion="nueva-nota" aria-label="Nueva nota">
                         <span class="icono" data-icono="nuevaNota" aria-hidden="true"></span>
                     </button>
                 </header>
@@ -31,7 +31,7 @@
                 <ul class="lista-notas" id="lista-hoy"></ul>
                 <div class="lista-vacia" id="hoy-vacio">
                     <p class="lista-vacia-texto">Todavía no hay notas hoy.</p>
-                    <button class="boton-principal" id="boton-empezar" type="button">Empezar a escribir</button>
+                    <button class="boton-principal" id="boton-empezar" type="button" data-accion="nueva-nota">Empezar a escribir</button>
                 </div>
             </section>
 
@@ -78,7 +78,7 @@
             <span class="barra-estado-texto" id="estado-guardado"></span>
             <div class="barra-estado-acciones">
                 <button class="boton-texto" id="boton-reiniciar-demo" type="button" hidden>Reiniciar demo</button>
-                <button class="boton-texto" id="boton-exportar" type="button">Exportar respaldo</button>
+                <button class="boton-texto" id="boton-exportar" type="button" hidden>Exportar respaldo</button>
             </div>
         </footer>
 
@@ -118,11 +118,11 @@
 
     <template id="plantilla-fila-nota">
         <li class="fila-nota">
-            <button class="fila-nota-eliminar" type="button" aria-label="Eliminar nota">
+            <button class="fila-nota-eliminar" type="button" data-accion="eliminar-nota" aria-label="Eliminar nota">
                 <span class="icono" data-icono="eliminar" aria-hidden="true"></span>
                 <span>Eliminar</span>
             </button>
-            <button class="fila-nota-abrir" type="button">
+            <button class="fila-nota-abrir" type="button" data-accion="abrir-nota">
                 <span class="fila-nota-hora"></span>
                 <span class="fila-nota-vista-previa"></span>
             </button>
@@ -159,9 +159,16 @@
         </li>
     </template>
 
+    <script src="js/externos/codemirror.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/fechas.js"></script>
     <script src="js/notas.js"></script>
     <script src="js/almacen-local.js"></script>
+    <script src="js/demo.js"></script>
+    <script src="js/autoguardado.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/listas.js"></script>
+    <script src="js/navegacion-movil.js"></script>
+    <script src="js/aplicacion.js"></script>
 </body>
 </html>

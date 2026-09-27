@@ -2,6 +2,8 @@
 // Cada nota se guarda como { id, contenido, eliminada, actualizadaEn } (actualizadaEn en milisegundos).
 
 let promesaBaseDemo = null;
+// Se sabe al abrir: IndexedDB avisa con onupgradeneeded cuando la base no existía
+let esBaseDemoRecienCreada = false;
 
 function abrirBaseDemo() {
     if (promesaBaseDemo !== null) {
@@ -12,6 +14,7 @@ function abrirBaseDemo() {
         const peticion = indexedDB.open(NOMBRE_BASE_DEMO, VERSION_BASE_DEMO);
         peticion.onupgradeneeded = function () {
             peticion.result.createObjectStore(ALMACEN_NOTAS_DEMO, { keyPath: "id" });
+            esBaseDemoRecienCreada = true;
         };
         peticion.onsuccess = function () {
             resolver(peticion.result);
@@ -88,6 +91,12 @@ const almacenLocal = {
     }
 };
 
+// Para sembrar las notas de ejemplo. No es parte de la interfaz común de almacenes.
+async function laBaseDemoEsNueva() {
+    await abrirBaseDemo();
+    return esBaseDemoRecienCreada;
+}
+
 // Para "Reiniciar demo". No es parte de la interfaz común de almacenes.
 async function borrarBaseDemo() {
     if (promesaBaseDemo !== null) {
@@ -96,6 +105,7 @@ async function borrarBaseDemo() {
         base.close();
         promesaBaseDemo = null;
     }
+    esBaseDemoRecienCreada = false;
 
     return new Promise(function (resolver, rechazar) {
         const peticion = indexedDB.deleteDatabase(NOMBRE_BASE_DEMO);
