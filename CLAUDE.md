@@ -167,9 +167,16 @@ banner.
   Firestore con caché offline (`persistentLocalCache` +
   `persistentMultipleTabManager`). `sesion.js` carga `js/externos/firebase.js`
   bajo demanda, insertando su `<script>`, solo en este modo.
-- Los dos almacenes son objetos planos con **las mismas funciones**
-  (`listarNotas`, `leerNota`, `guardarNota`, `eliminarNota`, `restaurarNota`).
-  El almacén se elige en un solo lugar al arrancar; el resto de la app no
+- Los dos almacenes son objetos planos con **las mismas funciones**, todas
+  asíncronas:
+  - `listarNotas()`: todas, incluidas las eliminadas.
+  - `leerNota(id)`: la nota o `null`.
+  - `guardarNota(id, contenido)`
+  - `eliminarNota(id)`
+  - `restaurarNota(id, contenido)`
+
+  Cada nota es `{ id, contenido, eliminada, actualizadaEn }`, con
+  `actualizadaEn` en milisegundos en los dos almacenes. El almacén se elige en un solo lugar al arrancar; el resto de la app no
   sabe cuál usa. Si una implementación necesita algo que la otra no tiene, es
   señal de que la interfaz se está rompiendo: revisarlo antes de agregar.
 - Si no hay red al arrancar, se usa el último modo guardado en `localStorage`
@@ -196,9 +203,10 @@ banner.
   No se usa como id porque Firestore no admite `/` en los ids de documento.
 - Campos: `contenido`, `actualizadaEn` (Firestore: `serverTimestamp()`),
   `eliminada` (booleano).
-- **Borrado suave:** eliminar es `eliminada: true` con `contenido` vacío;
-  deshacer es volver a `false`. Nunca `deleteDoc`. Las listas y el buscador
-  filtran las eliminadas.
+- **Borrado suave:** eliminar es `eliminada: true` con `contenido` vacío.
+  Como el contenido se vacía, la interfaz lo conserva en memoria mientras se
+  ve el aviso, y "Deshacer" llama a `restaurarNota(id, contenido)`. Nunca
+  `deleteDoc`. Las listas y el buscador filtran las eliminadas.
 - Una nota nueva **no se guarda hasta que tiene contenido** (no se acumulan
   notas vacías).
 
