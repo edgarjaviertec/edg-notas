@@ -19,6 +19,11 @@ function afirmarIgual(obtenido, esperado) {
     throw new Error("se esperaba " + JSON.stringify(esperado) + " pero se obtuvo " + JSON.stringify(obtenido));
 }
 
+// Para listas y objetos: === compara referencias, no contenido
+function afirmarIgualComoJson(obtenido, esperado) {
+    afirmarIgual(JSON.stringify(obtenido), JSON.stringify(esperado));
+}
+
 function registrarResultado(nombre, paso, detalle) {
     const elementoResultado = document.createElement("li");
     if (paso) {
