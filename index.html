@@ -113,7 +113,7 @@
             <input class="buscador-campo" id="campo-busqueda" type="search" placeholder="Buscar en las notas" autocomplete="off" aria-labelledby="titulo-buscador">
         </header>
         <p class="buscador-resumen" id="resumen-busqueda" role="status"></p>
-        <ul class="lista-notas" id="resultados-busqueda"></ul>
+        <ul class="buscador-resultados" id="resultados-busqueda"></ul>
     </dialog>
 
     <template id="plantilla-fila-nota">
@@ -145,8 +145,8 @@
 
     <template id="plantilla-pestana">
         <div class="pestana" role="presentation">
-            <button class="pestana-titulo" type="button" role="tab" aria-selected="false"></button>
-            <button class="pestana-cerrar" type="button" aria-label="Cerrar pestaña">×</button>
+            <button class="pestana-titulo" type="button" role="tab" aria-selected="false" data-accion="abrir-pestana"></button>
+            <button class="pestana-cerrar" type="button" aria-label="Cerrar pestaña" data-accion="cerrar-pestana">×</button>
         </div>
     </template>
 
@@ -169,6 +169,9 @@
     <script src="js/editor.js"></script>
     <script src="js/listas.js"></script>
     <script src="js/navegacion-movil.js"></script>
+    <script src="js/buscador.js"></script>
+    <script src="js/pestanas.js"></script>
+    <script src="js/atajos.js"></script>
     <script src="js/aplicacion.js"></script>
 </body>
 </html>

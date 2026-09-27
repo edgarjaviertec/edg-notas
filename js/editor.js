@@ -104,6 +104,17 @@ function enfocarEditor() {
     vistaEditor.focus();
 }
 
+// Selecciona la línea y la deja al centro de la vista (al abrir un resultado de búsqueda).
+// Si la nota cambió y ya no tiene tantas líneas, va a la última.
+function irALineaEnEditor(numeroLinea) {
+    const documento = vistaEditor.state.doc;
+    const linea = documento.line(Math.min(numeroLinea, documento.lines));
+    vistaEditor.dispatch({
+        selection: { anchor: linea.from, head: linea.to },
+        effects: CodeMirror.EditorView.scrollIntoView(linea.from, { y: "center" })
+    });
+}
+
 function cambiarNumerosLinea(mostrar) {
     mostrarNumerosLinea = mostrar;
     vistaEditor.dispatch({

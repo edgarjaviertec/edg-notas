@@ -8,6 +8,9 @@ const estado = {
     pantalla: "hoy",
     pantallaDeLista: "hoy",
     idNotaAbierta: null,
+    // Pestañas de escritorio; en móvil solo existe la nota abierta
+    pestanas: [],
+    pilaPestanasCerradas: [],
     // Lo que se necesita para "Deshacer": eliminarNota vacía el contenido
     notaEliminada: null,
     temporizadorAviso: null
@@ -33,6 +36,7 @@ function pintarListas() {
 
 function pintarTodo() {
     pintarListas();
+    pintarPestanas(estado.pestanas, estado.idNotaAbierta);
     pintarNavegacion(estado.pantalla, estado.pantallaDeLista);
     pintarTituloNota(estado.idNotaAbierta);
 }
@@ -98,10 +102,93 @@ async function abrirNota(id) {
         contenido = nota.contenido;
     }
 
+    if (esEscritorio()) {
+        estado.pestanas = agregarPestana(estado.pestanas, estado.idNotaAbierta, id);
+    } else {
+        estado.pestanas = [id];
+    }
     estado.idNotaAbierta = id;
     estado.pantalla = "editor";
     cargarContenidoEnEditor(contenido);
     pintarTodo();
+}
+
+function esNotaGuardada(id) {
+    const nota = buscarNotaEnEstado(id);
+    return nota !== null && !nota.eliminada;
+}
+
+// guardarEnPila es false al eliminar: una nota eliminada no se puede reabrir
+async function cerrarPestana(id, guardarEnPila) {
+    await guardarAhora();
+    const idVecina = elegirPestanaVecina(estado.pestanas, id);
+    estado.pestanas = quitarPestana(estado.pestanas, id);
+    // Una nota nueva que nunca se escribió no existe: no hay nada que reabrir
+    if (guardarEnPila && esNotaGuardada(id)) {
+        estado.pilaPestanasCerradas.push(id);
+    }
+
+    if (estado.idNotaAbierta !== id) {
+        pintarTodo();
+        return;
+    }
+    if (idVecina !== null) {
+        await abrirNota(idVecina);
+        return;
+    }
+    // Era la última pestaña: nunca queda el editor vacío en escritorio
+    cerrarNotaAbierta();
+    await abrirNotaInicialEnEscritorio();
+    pintarTodo();
+}
+
+async function cerrarPestanaActiva() {
+    if (!esEscritorio()) {
+        await volverALista();
+        return;
+    }
+    if (estado.idNotaAbierta === null) {
+        return;
+    }
+    await cerrarPestana(estado.idNotaAbierta, true);
+}
+
+async function reabrirPestanaCerrada() {
+    if (!esEscritorio()) {
+        return;
+    }
+    const idsReabribles = [];
+    for (const nota of prepararNotasVisibles(estado.notas)) {
+        idsReabribles.push(nota.id);
+    }
+    const resultado = tomarUltimaPestanaCerrada(estado.pilaPestanasCerradas, idsReabribles, estado.pestanas);
+    estado.pilaPestanasCerradas = resultado.pilaRestante;
+    if (resultado.id === null) {
+        return;
+    }
+    await abrirNota(resultado.id);
+}
+
+function buscarEnNotas() {
+    const patron = leerTextoBusqueda();
+    pintarResultadosBusqueda(buscarTexto(estado.notas, patron), patron);
+}
+
+async function abrirBuscadorDeNotas() {
+    // Lo recién escrito aún no está en estado.notas hasta que se guarda
+    await guardarAhora();
+    abrirBuscador();
+    buscarEnNotas();
+}
+
+async function abrirResultadoBusqueda(botonResultado) {
+    cerrarBuscador();
+    await abrirNota(botonResultado.dataset.idNota);
+    irALineaEnEditor(Number(botonResultado.dataset.numeroLinea));
+    // En móvil enfocar abriría el teclado encima del resultado
+    if (esEscritorio()) {
+        enfocarEditor();
+    }
 }
 
 // En móvil se vuelve a la lista; en escritorio quien llama abre otra nota enseguida
@@ -163,9 +250,9 @@ async function eliminarNota(id) {
     mostrarAvisoDeshacer("Nota " + horaDeNota(id) + " eliminada");
     estado.notaEliminada = { id: id, contenido: contenido };
 
-    if (estado.idNotaAbierta === id) {
-        cerrarNotaAbierta();
-        await abrirNotaInicialEnEscritorio();
+    if (estado.pestanas.includes(id)) {
+        await cerrarPestana(id, false);
+        return;
     }
     pintarTodo();
 }
@@ -216,6 +303,8 @@ function alCambiarModoPantalla() {
 async function reiniciarDemoDesdeBoton() {
     await guardarAhora();
     await reiniciarDemo(new Date());
+    estado.pestanas = [];
+    estado.pilaPestanasCerradas = [];
     cerrarNotaAbierta();
     await recargarNotas();
     await abrirNotaInicialEnEscritorio();
@@ -232,6 +321,10 @@ function manejarClicEnListas(evento) {
         crearNotaNueva();
         return;
     }
+    if (accion === "abrir-buscador") {
+        abrirBuscadorDeNotas();
+        return;
+    }
 
     const fila = boton.closest("[data-id-nota]");
     if (fila === null) {
@@ -245,8 +338,47 @@ function manejarClicEnListas(evento) {
     }
 }
 
+function manejarClicEnPestanas(evento) {
+    const boton = evento.target.closest("[data-accion]");
+    if (boton === null) {
+        return;
+    }
+    const id = boton.closest("[data-id-nota]").dataset.idNota;
+    if (boton.dataset.accion === "abrir-pestana") {
+        abrirNota(id);
+    }
+    if (boton.dataset.accion === "cerrar-pestana") {
+        cerrarPestana(id, true);
+    }
+}
+
+function manejarClicEnResultados(evento) {
+    const boton = evento.target.closest(".resultado-busqueda");
+    if (boton === null) {
+        return;
+    }
+    abrirResultadoBusqueda(boton);
+}
+
+// Enter en el campo abre el primer resultado
+function manejarTeclaEnBusqueda(evento) {
+    if (evento.key !== "Enter") {
+        return;
+    }
+    evento.preventDefault();
+    const primerResultado = document.querySelector("#resultados-busqueda .resultado-busqueda");
+    if (primerResultado !== null) {
+        abrirResultadoBusqueda(primerResultado);
+    }
+}
+
 function conectarEventos() {
     document.getElementById("panel-listas").addEventListener("click", manejarClicEnListas);
+    document.getElementById("pestanas").addEventListener("click", manejarClicEnPestanas);
+    document.getElementById("campo-busqueda").addEventListener("input", buscarEnNotas);
+    document.getElementById("campo-busqueda").addEventListener("keydown", manejarTeclaEnBusqueda);
+    document.getElementById("resultados-busqueda").addEventListener("click", manejarClicEnResultados);
+    document.getElementById("boton-cerrar-buscador").addEventListener("click", cerrarBuscador);
     document.getElementById("alternar-semana").addEventListener("click", alternarSemana);
     document.getElementById("boton-volver").addEventListener("click", volverALista);
     document.getElementById("boton-deshacer").addEventListener("click", deshacerEliminacion);
@@ -306,6 +438,13 @@ async function arrancar() {
     document.getElementById("boton-reiniciar-demo").hidden = false;
 
     iniciarAutoguardado(guardarNota);
+    iniciarDeslizarParaEliminar();
+    iniciarAtajos({
+        nuevaNota: crearNotaNueva,
+        cerrarPestana: cerrarPestanaActiva,
+        reabrirPestana: reabrirPestanaCerrada,
+        buscar: abrirBuscadorDeNotas
+    });
     conectarEventos();
 
     try {

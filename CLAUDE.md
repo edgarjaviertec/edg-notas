@@ -350,7 +350,10 @@ legacy/                     # app de Python, ignorada por git
 
 - Solo sobre lógica pura: `fechas.js` y `notas.js` (fecha local, últimos 7
   días, id y ruta de una nota, hora, primera línea, agrupación del historial,
-  búsqueda). No se prueba la UI.
+  búsqueda), y las funciones que deciden en `pestanas.js` (agregar, quitar,
+  vecina, pila de cerradas) y `atajos.js` (qué tecla es qué acción). No se
+  prueba la UI. Si un archivo mezcla lógica y DOM, la lógica va en funciones
+  que reciben datos y devuelven datos, para poder probarla.
 - `pruebas.html` carga esos scripts y los de `pruebas/`, y muestra en la
   página cuáles pasaron y cuáles fallaron. Sin npm ni librerías de pruebas.
 

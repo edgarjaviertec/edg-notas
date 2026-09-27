@@ -321,7 +321,13 @@ dialog {
     min-height: var(--alto-toque);
     padding: var(--espacio-3) var(--espacio-4);
     background-color: var(--color-fondo-lateral);
+    touch-action: pan-y;
     transition: transform var(--duracion-transicion) ease-out;
+}
+
+/* Mientras el dedo arrastra, la fila lo sigue sin animación */
+.fila-nota-abrir.esta-arrastrando {
+    transition: none;
 }
 
 .fila-nota-hora {
@@ -556,6 +562,13 @@ dialog {
     padding: var(--espacio-2) var(--espacio-4);
     color: var(--color-texto-tenue);
     font-size: var(--tamano-texto-pequeno);
+}
+
+/* El encabezado queda fijo; solo los resultados se desplazan */
+.buscador-resultados {
+    flex-grow: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .resultado-busqueda {
