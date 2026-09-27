@@ -1,0 +1,17 @@
+# Código de la versión de escritorio en Python, solo como referencia local
+legacy/
+
+# macOS
+.DS_Store
+._*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Secretos (no debería haber ninguno en este proyecto)
+.env
+
+# Por si alguna vez se regeneran las librerías externas aquí por error
+node_modules/

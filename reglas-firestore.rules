@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Copia de las reglas publicadas en la consola de Firebase.
+// Reemplazar UID_DEL_DUENO por el UID del único usuario (ver configurar-firebase.md).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /notas/{nota} {
+      allow read, create, update: if request.auth != null
+                                  && request.auth.uid == "UID_DEL_DUENO";
+    }
+  }
+}
