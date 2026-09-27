@@ -114,7 +114,7 @@ probar("agruparNotasSemana incluye solo días con notas, con etiquetas de hoy y 
         crearNotaDePrueba("2026-09-23_09-00-00", "hace cuatro días"),
         crearNotaDePrueba("2026-09-20_09-00-00", "hace siete días, ya fuera")
     ];
-    const dias = agruparNotasSemana(notas, new Date(2026, 8, 27, 10, 0));
+    const dias = agruparNotasSemana(notas, new Date(2026, 8, 27, 10, 0), []);
 
     afirmarIgual(dias.length, 3);
     afirmarIgualComoJson(
@@ -133,7 +133,23 @@ probar("agruparNotasSemana incluye solo días con notas, con etiquetas de hoy y 
 
 probar("agruparNotasSemana ignora días que solo tienen notas eliminadas", function () {
     const notas = [crearNotaDePrueba("2026-09-27_09-00-00", "borrada", true)];
-    afirmarIgual(agruparNotasSemana(notas, new Date(2026, 8, 27)).length, 0);
+    afirmarIgual(agruparNotasSemana(notas, new Date(2026, 8, 27), []).length, 0);
+});
+
+probar("agruparNotasSemana pone los borradores en hoy, aunque hoy no tenga notas", function () {
+    const notas = [crearNotaDePrueba("2026-09-26_09-00-00", "ayer")];
+    const dias = agruparNotasSemana(notas, new Date(2026, 8, 27, 10, 0), ["borrador-1"]);
+
+    afirmarIgual(dias.length, 2);
+    afirmarIgual(dias[0].textoFecha, "2026-09-27");
+    afirmarIgualComoJson(dias[0].idsBorradores, ["borrador-1"]);
+    afirmarIgual(dias[0].notas.length, 0);
+    afirmarIgualComoJson(dias[1].idsBorradores, []);
+});
+
+probar("esIdBorrador distingue borradores de notas", function () {
+    afirmarIgual(esIdBorrador("borrador-3"), true);
+    afirmarIgual(esIdBorrador("2026-09-27_15-13-00"), false);
 });
 
 probar("agruparHistorial arma año > mes > día, del más nuevo al más viejo", function () {

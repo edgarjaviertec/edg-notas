@@ -9,6 +9,15 @@ const HORAS_POR_DIA = 24;
 const MINUTOS_POR_HORA = 60;
 const SEGUNDOS_POR_MINUTO = 60;
 
+// Una nota nueva es un borrador hasta que tiene contenido: vive solo en su pestaña y no se
+// guarda. Su id temporal no lleva fecha; al escribir el primer carácter recibe un id de nota.
+const PREFIJO_BORRADOR = "borrador-";
+const TITULO_BORRADOR = "Sin título";
+
+function esIdBorrador(id) {
+    return id.startsWith(PREFIJO_BORRADOR);
+}
+
 function crearIdNota(fechaHora) {
     const horas = rellenarConCero(fechaHora.getHours());
     const minutos = rellenarConCero(fechaHora.getMinutes());
@@ -96,17 +105,23 @@ function listarNotasDelDia(notas, fecha) {
     return notasDelDia;
 }
 
-// Solo los días de los últimos 7 que tienen notas, del más nuevo al más viejo
-function agruparNotasSemana(notas, hoy) {
+// Solo los días de los últimos 7 que tienen notas, del más nuevo al más viejo.
+// Los borradores abiertos van en hoy, aunque hoy todavía no tenga notas guardadas.
+function agruparNotasSemana(notas, hoy, idsBorradores) {
     const diasConNotas = [];
     for (const fecha of calcularUltimosSieteDias(hoy)) {
         const notasDelDia = listarNotasDelDia(notas, fecha);
-        if (notasDelDia.length === 0) {
+        let idsBorradoresDelDia = [];
+        if (sonElMismoDia(fecha, hoy)) {
+            idsBorradoresDelDia = idsBorradores;
+        }
+        if (notasDelDia.length === 0 && idsBorradoresDelDia.length === 0) {
             continue;
         }
         diasConNotas.push({
             textoFecha: formatearFecha(fecha),
             etiqueta: etiquetarDia(fecha, hoy),
+            idsBorradores: idsBorradoresDelDia,
             notas: notasDelDia
         });
     }

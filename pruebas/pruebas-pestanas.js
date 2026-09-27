@@ -23,6 +23,11 @@ probar("quitarPestana quita solo esa", function () {
     afirmarIgualComoJson(quitarPestana(["a"], "z"), ["a"]);
 });
 
+probar("reemplazarPestana deja la nueva en el mismo lugar", function () {
+    afirmarIgualComoJson(reemplazarPestana(["a", "b", "c"], "b", "x"), ["a", "x", "c"]);
+    afirmarIgualComoJson(reemplazarPestana(["a"], "z", "x"), ["a"]);
+});
+
 probar("elegirPestanaVecina prefiere la de la derecha", function () {
     afirmarIgual(elegirPestanaVecina(["a", "b", "c"], "b"), "c");
     afirmarIgual(elegirPestanaVecina(["a", "b", "c"], "a"), "b");

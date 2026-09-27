@@ -13,6 +13,8 @@ const estado = {
     // Pestañas de escritorio; en móvil solo existe la nota abierta
     pestanas: [],
     pilaPestanasCerradas: [],
+    // Solo para que cada borrador tenga un id temporal distinto
+    contadorBorradores: 0,
     // Lo que se necesita para "Deshacer": eliminarNota vacía el contenido
     notaEliminada: null,
     temporizadorAviso: null
@@ -33,7 +35,7 @@ function pintarEstadoGuardado(texto) {
 
 function pintarListas() {
     pintarListaHoy(listarNotasDelDia(estado.notas, estado.hoy), estado.idNotaAbierta, estado.hoy);
-    pintarListaSemana(agruparNotasSemana(estado.notas, estado.hoy), estado.idNotaAbierta);
+    pintarListaSemana(agruparNotasSemana(estado.notas, estado.hoy, listarIdsBorradores()), estado.idNotaAbierta);
     pintarHistorial(agruparHistorial(estado.notas), estado.idNotaAbierta);
 }
 
@@ -73,6 +75,31 @@ function listarIdsNotas() {
     return ids;
 }
 
+// En móvil no se listan: el borrador desaparece al volver a la lista
+function listarIdsBorradores() {
+    const ids = [];
+    if (!esEscritorio()) {
+        return ids;
+    }
+    for (const id of estado.pestanas) {
+        if (esIdBorrador(id)) {
+            ids.push(id);
+        }
+    }
+    return ids;
+}
+
+function crearIdBorrador() {
+    estado.contadorBorradores += 1;
+    return PREFIJO_BORRADOR + estado.contadorBorradores;
+}
+
+function cambiarIdNotaAbierta(idNuevo) {
+    estado.pestanas = reemplazarPestana(estado.pestanas, estado.idNotaAbierta, idNuevo);
+    estado.idNotaAbierta = idNuevo;
+    pintarTodo();
+}
+
 // Un fallo al guardar nunca rompe la app ni muestra un diálogo: se avisa en la barra de estado
 async function guardarNota(id, contenido) {
     pintarEstadoGuardado("Guardando…");
@@ -87,14 +114,51 @@ async function guardarNota(id, contenido) {
     }
 }
 
+// El id lleva la hora del primer carácter, no la de cuando se abrió el borrador (como en la app de Python)
+function convertirBorradorEnNota(contenido) {
+    const idsOcupados = listarIdsNotas().concat(estado.pestanas);
+    const id = crearIdNotaLibre(new Date(), idsOcupados);
+    cambiarIdNotaAbierta(id);
+    guardarNota(id, contenido);
+}
+
+// Una nota a la que se le borra todo el texto deja de existir: no quedan notas vacías.
+// Sin aviso de "Deshacer": el texto ya lo borró quien escribe, y Ctrl+Z en el editor lo recupera.
+async function convertirNotaEnBorrador() {
+    const id = estado.idNotaAbierta;
+    // Lo pendiente es texto viejo de esta misma nota: guardarlo para eliminarla enseguida no sirve
+    descartarGuardadoPendiente();
+    cambiarIdNotaAbierta(crearIdBorrador());
+
+    try {
+        await estado.almacen.eliminarNota(id);
+    } catch (error) {
+        console.error(error);
+        pintarEstadoGuardado("No se pudo eliminar la nota vacía");
+        return;
+    }
+    actualizarNotaEnEstado(id, "", true);
+    pintarEstadoGuardado("");
+    pintarListas();
+}
+
 function alEscribirEnEditor(contenido) {
-    const esNotaNueva = buscarNotaEnEstado(estado.idNotaAbierta) === null;
-    // Una nota nueva no se guarda hasta que tiene contenido
-    if (esNotaNueva && contenido === "") {
+    const id = estado.idNotaAbierta;
+    if (id === null) {
+        return;
+    }
+    if (esIdBorrador(id)) {
+        if (contenido !== "") {
+            convertirBorradorEnNota(contenido);
+        }
+        return;
+    }
+    if (contenido === "") {
+        convertirNotaEnBorrador();
         return;
     }
     pintarEstadoGuardado("Sin guardar");
-    programarGuardado(estado.idNotaAbierta, contenido);
+    programarGuardado(id, contenido);
 }
 
 async function abrirNota(id) {
@@ -126,7 +190,7 @@ async function cerrarPestana(id, guardarEnPila) {
     await guardarAhora();
     const idVecina = elegirPestanaVecina(estado.pestanas, id);
     estado.pestanas = quitarPestana(estado.pestanas, id);
-    // Una nota nueva que nunca se escribió no existe: no hay nada que reabrir
+    // Un borrador no existe: no hay nada que reabrir
     if (guardarEnPila && esNotaGuardada(id)) {
         estado.pilaPestanasCerradas.push(id);
     }
@@ -202,8 +266,7 @@ function cerrarNotaAbierta() {
 }
 
 async function crearNotaNueva() {
-    const id = crearIdNotaLibre(new Date(), listarIdsNotas());
-    await abrirNota(id);
+    await abrirNota(crearIdBorrador());
     enfocarEditor();
 }
 

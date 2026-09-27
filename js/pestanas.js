@@ -26,6 +26,19 @@ function quitarPestana(pestanas, idQuitada) {
     return nuevasPestanas;
 }
 
+// Cuando un borrador recibe su id de nota, o una nota vaciada vuelve a ser borrador
+function reemplazarPestana(pestanas, idAnterior, idNuevo) {
+    const nuevasPestanas = [];
+    for (const id of pestanas) {
+        if (id === idAnterior) {
+            nuevasPestanas.push(idNuevo);
+        } else {
+            nuevasPestanas.push(id);
+        }
+    }
+    return nuevasPestanas;
+}
+
 // Al cerrar una pestaña se activa la de su derecha; si era la última, la de su izquierda.
 // null si no queda ninguna.
 function elegirPestanaVecina(pestanas, idCerrada) {
@@ -65,7 +78,11 @@ function pintarPestanas(pestanas, idActiva) {
         pestana.classList.toggle("esta-activa", esActiva);
 
         const titulo = pestana.querySelector(".pestana-titulo");
-        titulo.textContent = fechaDeNota(id) + " " + horaDeNota(id);
+        if (esIdBorrador(id)) {
+            titulo.textContent = TITULO_BORRADOR;
+        } else {
+            titulo.textContent = fechaDeNota(id) + " " + horaDeNota(id);
+        }
         titulo.setAttribute("aria-selected", String(esActiva));
         elementosPestanas.push(pestana);
     }

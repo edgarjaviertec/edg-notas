@@ -29,6 +29,14 @@ function programarGuardado(id, contenido) {
     }
 }
 
+function descartarGuardadoPendiente() {
+    clearTimeout(temporizadorEspera);
+    clearTimeout(temporizadorTecho);
+    temporizadorEspera = null;
+    temporizadorTecho = null;
+    guardadoPendiente = null;
+}
+
 function tieneGuardadoPendiente() {
     return guardadoPendiente !== null;
 }

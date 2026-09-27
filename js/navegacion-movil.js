@@ -36,11 +36,16 @@ function pintarNavegacion(pantalla, pantallaDeLista) {
 }
 
 function pintarTituloNota(idNota) {
-    let titulo = "";
-    if (idNota !== null) {
-        titulo = fechaDeNota(idNota) + " · " + horaDeNota(idNota);
+    const elementoTitulo = document.getElementById("titulo-nota");
+    if (idNota === null) {
+        elementoTitulo.textContent = "";
+        return;
     }
-    document.getElementById("titulo-nota").textContent = titulo;
+    if (esIdBorrador(idNota)) {
+        elementoTitulo.textContent = TITULO_BORRADOR;
+        return;
+    }
+    elementoTitulo.textContent = fechaDeNota(idNota) + " · " + horaDeNota(idNota);
 }
 
 // Con el teclado abierto se oculta la barra inferior (ver .esta-escribiendo en el CSS)

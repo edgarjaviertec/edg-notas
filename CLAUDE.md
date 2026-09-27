@@ -215,7 +215,11 @@ banner.
   ve el aviso, y "Deshacer" llama a `restaurarNota(id, contenido)`. Nunca
   `deleteDoc`. Las listas y el buscador filtran las eliminadas.
 - Una nota nueva **no se guarda hasta que tiene contenido** (no se acumulan
-  notas vacías).
+  notas vacías). Mientras tanto es un borrador: id temporal `borrador-N`,
+  título "Sin título", y recibe su id real (con la hora del primer carácter)
+  al escribir. Si a una nota guardada se le borra todo el texto, se elimina
+  (borrado suave, sin aviso de "Deshacer") y vuelve a ser borrador, como en
+  la app de Python.
 
 ### Lecturas de Firestore (cuota del plan gratis)
 

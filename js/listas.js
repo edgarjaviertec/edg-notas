@@ -27,6 +27,18 @@ function crearFilaNota(nota, idNotaAbierta) {
     return fila;
 }
 
+function crearFilaBorrador(idBorrador, idNotaAbierta) {
+    const fila = clonarPlantilla("plantilla-fila-nota");
+    fila.dataset.idNota = idBorrador;
+    fila.querySelector(".fila-nota-hora").hidden = true;
+    fila.querySelector(".fila-nota-vista-previa").textContent = TITULO_BORRADOR;
+
+    if (idBorrador === idNotaAbierta) {
+        fila.querySelector(".fila-nota-abrir").setAttribute("aria-current", "true");
+    }
+    return fila;
+}
+
 function crearFilasNotas(notas, idNotaAbierta) {
     const filas = [];
     for (const nota of notas) {
@@ -50,7 +62,12 @@ function pintarListaSemana(diasConNotas, idNotaAbierta) {
             titulo = dia.textoFecha + "  [" + dia.etiqueta + "]";
         }
         elementoDia.querySelector(".grupo-dia-titulo").textContent = titulo;
-        elementoDia.querySelector(".lista-notas").replaceChildren(...crearFilasNotas(dia.notas, idNotaAbierta));
+        const filas = [];
+        for (const idBorrador of dia.idsBorradores) {
+            filas.push(crearFilaBorrador(idBorrador, idNotaAbierta));
+        }
+        filas.push(...crearFilasNotas(dia.notas, idNotaAbierta));
+        elementoDia.querySelector(".lista-notas").replaceChildren(...filas);
         elementosDias.push(elementoDia);
     }
     document.getElementById("lista-semana").replaceChildren(...elementosDias);
