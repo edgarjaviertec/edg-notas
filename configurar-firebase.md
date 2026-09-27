@@ -45,9 +45,10 @@ la cuota con peticiones falsas).
 
 ## 5. Pegar las reglas de seguridad
 
-1. Abrir `reglas-firestore.rules` de este repo.
-2. Reemplazar `UID_DEL_DUENO` por el UID del paso 3.
-3. Pegar el contenido en **Firestore Database > Rules** y publicar.
+1. Abrir `reglas-firestore.rules` de este repo. Ya tiene el UID del usuario
+   del paso 3; si alguna vez se borra y se vuelve a crear ese usuario, el UID
+   cambia y hay que actualizarlo aquí.
+2. Pegar el contenido en **Firestore Database > Rules** y publicar.
 
 No se permite `delete` a propósito: la app nunca borra documentos, usa
 borrado suave (`eliminada: true`).

@@ -3,6 +3,8 @@
 
 const estado = {
     almacen: null,
+    modo: MODO_DEMO,
+    ultimaSincronizacion: 0,
     notas: [],
     hoy: new Date(),
     pantalla: "hoy",
@@ -17,6 +19,7 @@ const estado = {
 };
 
 const TEXTO_MODO_DEMO = "Modo demo · tus notas viven solo en este navegador y pueden borrarse";
+const TEXTO_SIN_CONEXION = "Sin conexión · los cambios se sincronizan al volver";
 
 function pintarIconos() {
     for (const elemento of document.querySelectorAll("[data-icono]")) {
@@ -402,13 +405,17 @@ function conectarEventos() {
         });
     }
 
+    document.getElementById("boton-cerrar-sesion").addEventListener("click", cerrarSesionDesdeBoton);
+
     consultaEscritorio.addEventListener("change", alCambiarModoPantalla);
-    window.addEventListener("focus", revisarCambioDeDia);
+    window.addEventListener("focus", alVolverALaApp);
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
-            revisarCambioDeDia();
+            alVolverALaApp();
         }
     });
+    window.addEventListener("online", pintarConexion);
+    window.addEventListener("offline", pintarConexion);
 }
 
 async function recargarNotas() {
@@ -428,6 +435,69 @@ async function abrirNotaInicialEnEscritorio() {
         return;
     }
     await crearNotaNueva();
+}
+
+function pintarConexion() {
+    if (estado.modo !== MODO_PERSONAL) {
+        return;
+    }
+    let texto = "";
+    if (!navigator.onLine) {
+        texto = ICONOS.sinConexion + " " + TEXTO_SIN_CONEXION;
+    }
+    document.getElementById("estado-modo").textContent = texto;
+}
+
+// En el modo personal, al volver a la app se traen los cambios hechos en otros dispositivos
+async function alVolverALaApp() {
+    revisarCambioDeDia();
+    if (estado.modo !== MODO_PERSONAL) {
+        return;
+    }
+    const ahora = Date.now();
+    if (ahora - estado.ultimaSincronizacion < ESPERA_MINIMA_ENTRE_SINCRONIZACIONES_MS) {
+        return;
+    }
+    estado.ultimaSincronizacion = ahora;
+    try {
+        await recargarNotas();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function cerrarSesionDesdeBoton() {
+    // Sin conexión, los cambios pendientes no se pueden subir y se perderían al borrar la copia local
+    if (!navigator.onLine) {
+        pintarEstadoGuardado("Conéctate a internet para cerrar sesión sin perder cambios");
+        return;
+    }
+    await guardarAhora();
+    pintarEstadoGuardado("Cerrando sesión…");
+    try {
+        await cerrarSesion();
+    } catch (error) {
+        console.error(error);
+        pintarEstadoGuardado("No se pudo cerrar sesión");
+        return;
+    }
+    location.replace("./");
+}
+
+function prepararModoDemo() {
+    estado.almacen = almacenLocal;
+    document.getElementById("estado-modo").textContent = TEXTO_MODO_DEMO;
+    document.getElementById("boton-reiniciar-demo").hidden = false;
+}
+
+function prepararModoPersonal() {
+    estado.almacen = almacenRemoto;
+    estado.ultimaSincronizacion = Date.now();
+    document.getElementById("boton-cerrar-sesion").hidden = false;
+    avisarFallosDeEscrituraRemota(function () {
+        pintarEstadoGuardado("No se pudo sincronizar");
+    });
+    pintarConexion();
 }
 
 // Falla en file:// y en navegadores sin soporte: la app funciona igual, solo que sin modo offline
@@ -455,11 +525,6 @@ async function arrancar() {
     });
     cambiarNumerosLinea(esEscritorio());
 
-    // Por ahora solo existe el modo demo; sesion.js elegirá el almacén
-    estado.almacen = almacenLocal;
-    document.getElementById("estado-modo").textContent = TEXTO_MODO_DEMO;
-    document.getElementById("boton-reiniciar-demo").hidden = false;
-
     iniciarAutoguardado(guardarNota);
     iniciarDeslizarParaEliminar();
     iniciarAtajos({
@@ -471,7 +536,25 @@ async function arrancar() {
     conectarEventos();
 
     try {
-        await sembrarDemoSiHaceFalta(estado.hoy);
+        estado.modo = await elegirModo();
+    } catch (error) {
+        // Por ejemplo, sin conexión y sin firebase.js en caché. No se cae a la demo: serían otras notas
+        console.error(error);
+        pintarEstadoGuardado("No se pudo cargar tu sesión. Revisa la conexión y recarga.");
+        return;
+    }
+    if (estado.modo === SESION_VENCIDA) {
+        location.replace("entrar.html");
+        return;
+    }
+
+    try {
+        if (estado.modo === MODO_PERSONAL) {
+            prepararModoPersonal();
+        } else {
+            prepararModoDemo();
+            await sembrarDemoSiHaceFalta(estado.hoy);
+        }
         await recargarNotas();
     } catch (error) {
         console.error(error);

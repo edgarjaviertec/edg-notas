@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#eeeeee" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#252526" media="(prefers-color-scheme: dark)">
+    <title>EdgNotas: entrar</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="icon" href="iconos/icono.svg" type="image/svg+xml">
+</head>
+<body>
+    <main class="pagina-entrar">
+        <form class="formulario-entrar" id="formulario-entrar">
+            <h1 class="formulario-entrar-titulo">Entrar</h1>
+            <p class="formulario-entrar-texto">Solo para el dueño de estas notas. Si quieres probar la app, usa la <a class="enlace" href="./">demo</a>.</p>
+
+            <label class="campo">
+                <span class="campo-etiqueta">Correo</span>
+                <input class="campo-entrada" id="campo-correo" type="email" autocomplete="username" required>
+            </label>
+            <label class="campo">
+                <span class="campo-etiqueta">Contraseña</span>
+                <input class="campo-entrada" id="campo-contrasena" type="password" autocomplete="current-password" required>
+            </label>
+
+            <p class="mensaje-error" id="mensaje-error" role="alert" hidden></p>
+            <button class="boton-principal" id="boton-entrar" type="submit">Entrar</button>
+        </form>
+    </main>
+
+    <script src="js/configuracion.js"></script>
+    <script src="js/sesion.js"></script>
+    <script src="js/entrar.js"></script>
+</body>
+</html>

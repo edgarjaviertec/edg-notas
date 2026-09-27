@@ -60,6 +60,8 @@
     --alto-maximo-buscador: 70vh;
     --ancho-maximo-buscador: 90vw;
     --espaciado-letras-titulo: 0.06em;
+    --ancho-formulario-entrar: 360px;
+    --opacidad-desactivado: 0.6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -592,6 +594,68 @@ dialog {
     color: var(--color-texto-tenue);
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+/* Página de entrada (entrar.html) */
+
+.pagina-entrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: var(--espacio-5) var(--espacio-4);
+}
+
+.formulario-entrar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-4);
+    width: 100%;
+    max-width: var(--ancho-formulario-entrar);
+}
+
+.formulario-entrar-titulo {
+    font-size: var(--tamano-titulo);
+    font-weight: 700;
+}
+
+.formulario-entrar-texto {
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+.enlace {
+    color: var(--color-acento);
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-1);
+}
+
+.campo-etiqueta {
+    color: var(--color-texto-tenue);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+.campo-entrada {
+    min-height: var(--alto-toque);
+    padding: 0 var(--espacio-3);
+    border: var(--grosor-borde) solid var(--color-borde);
+    border-radius: var(--radio);
+    background-color: var(--color-fondo);
+    font-size: var(--tamano-texto-editor);
+}
+
+.mensaje-error {
+    color: var(--color-peligro);
+    font-size: var(--tamano-texto-pequeno);
+}
+
+.boton-principal:disabled {
+    opacity: var(--opacidad-desactivado);
+    cursor: wait;
 }
 
 /* Escritorio: barra lateral + editor con pestañas, sin barra inferior */

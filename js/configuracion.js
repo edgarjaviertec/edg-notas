@@ -19,6 +19,8 @@ const ESPERA_AUTOGUARDADO_MS = 2000;
 // Aunque no se deje de teclear, se fuerza una escritura cada este tiempo
 const TECHO_AUTOGUARDADO_MS = 10000;
 const DURACION_AVISO_DESHACER_MS = 5000;
+// Al volver a la app se piden cambios de otros dispositivos, pero no más seguido que esto
+const ESPERA_MINIMA_ENTRE_SINCRONIZACIONES_MS = 60000;
 
 const NOMBRE_BASE_DEMO = "edg-notas-demo";
 const VERSION_BASE_DEMO = 1;
@@ -33,10 +35,10 @@ const CLAVE_ULTIMO_MODO = "edg-notas:ultimo-modo";
 // Valores públicos por diseño: la seguridad está en reglas-firestore.rules.
 // Se llenan al crear el proyecto (ver configurar-firebase.md). Las claves las define Firebase.
 const CONFIGURACION_FIREBASE = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyCPa67GwxSIMVQzA4yScqJSvL1NsvBMEXE",
+    authDomain: "edg-notas.firebaseapp.com",
+    projectId: "edg-notas",
+    storageBucket: "edg-notas.firebasestorage.app",
+    messagingSenderId: "90350547720",
+    appId: "1:90350547720:web:68528622616d7e8b7c32bd"
 };

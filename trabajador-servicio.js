@@ -25,6 +25,8 @@ const ARCHIVOS_APP = [
     "/js/fechas.js",
     "/js/notas.js",
     "/js/almacen-local.js",
+    "/js/almacen-remoto.js",
+    "/js/sesion.js",
     "/js/demo.js",
     "/js/autoguardado.js",
     "/js/editor.js",

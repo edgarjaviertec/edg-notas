@@ -144,7 +144,7 @@ export { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 ```js
 export { initializeApp } from "firebase/app";
 export { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-export { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDoc, getDocs, getDocFromCache, getDocsFromCache, setDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from "firebase/firestore";
+export { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, terminate, clearIndexedDbPersistence, waitForPendingWrites, collection, doc, getDoc, getDocs, getDocFromCache, getDocsFromCache, setDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from "firebase/firestore";
 ```
 
 `fflate.js` no se empaqueta: se descarga tal cual de
@@ -193,6 +193,13 @@ banner.
   cerradas al UID del dueño y sin permiso de `delete`. La configuración de
   Firebase en el JS es pública por diseño.
 - Pasos para crear el proyecto: `configurar-firebase.md`.
+- El modo se decide sin descargar Firebase: `localStorage` guarda
+  `modo-personal` al entrar. Sin esa marca es demo; con ella se carga
+  Firebase y, si la sesión ya no existe, se borra la marca y se va a
+  `entrar.html`.
+- Cerrar sesión espera a que se suban los cambios pendientes y borra la copia
+  local de Firestore (en una computadora ajena no debe quedar nada). Sin
+  conexión no se permite cerrar sesión, porque esos cambios se perderían.
 
 ### Notas
 
@@ -225,6 +232,12 @@ banner.
   forzada aunque no se deje de teclear.
 - Guardar también en `visibilitychange` (al pasar a `hidden`) y en
   `pagehide`: en móvil el sistema cierra pestañas sin avisar.
+- En Firestore, `guardarNota` **no espera la confirmación del servidor**: sin
+  conexión nunca llegaría y la app se quedaría esperando. La escritura queda
+  en la caché local y se sube al volver la conexión; si el servidor la
+  rechaza, se avisa en la barra de estado.
+- En el modo personal, al volver a la app (`focus`, `visibilitychange`) se
+  piden los cambios de otros dispositivos, como mucho una vez por minuto.
 - Un fallo de guardado **nunca rompe la app ni muestra un diálogo**: se
   refleja en la barra de estado y se registra con `console.error`.
 - Conflictos: si la misma nota se edita offline en dos dispositivos, gana la
