@@ -17,8 +17,10 @@ Pasos para crear el backend del modo personal. Solo se hacen una vez.
 3. Copiar el objeto de configuración (`apiKey`, `authDomain`, `projectId`,
    `appId`, etc.) a `js/configuracion.js`.
 
-Esos valores son públicos por diseño; no son secretos. Lo que protege los
-datos son las reglas del paso 5.
+Esos valores son públicos por diseño; no son secretos. Cualquiera puede
+copiarlos del código de la página, y eso está bien: lo que protege los datos
+son las reglas del paso 5. El paso 6 limita el único abuso posible (gastar
+la cuota con peticiones falsas).
 
 ## 3. Activar Authentication con correo y contraseña
 
@@ -27,8 +29,10 @@ datos son las reglas del paso 5.
 2. **Authentication > Users > Add user:** crear el único usuario, con el
    correo personal y una contraseña larga (varias palabras al azar).
 3. Copiar el **UID** del usuario creado; se usa en el paso 5.
-4. Opcional: **Authentication > Settings > User actions:** desactivar la
-   creación de cuentas nuevas, para que nadie pueda registrarse.
+4. **Authentication > Settings > User actions:** desactivar la creación de
+   cuentas nuevas. Sin esto, cualquiera con la `apiKey` puede registrarse;
+   no vería ninguna nota (las reglas lo rechazan), pero no hay razón para
+   permitirlo.
 
 ## 4. Crear la base de Firestore
 
@@ -48,7 +52,30 @@ datos son las reglas del paso 5.
 No se permite `delete` a propósito: la app nunca borra documentos, usa
 borrado suave (`eliminada: true`).
 
-## 6. Comprobar
+## 6. Restringir la apiKey
+
+En https://console.cloud.google.com, con el mismo proyecto seleccionado:
+**APIs y servicios > Credenciales**, abrir la clave del navegador que creó
+Firebase ("Browser key").
+
+1. **Restricciones de aplicación:** "Sitios web", y agregar solo:
+   - el dominio de Netlify (por ejemplo `https://edg-notas.netlify.app/*`)
+   - `http://localhost:8000/*` para desarrollo local
+2. **Restricciones de API:** "Restringir clave", y marcar solo:
+   - Identity Toolkit API (el login)
+   - Token Service API (mantener la sesión)
+   - Cloud Firestore API
+3. Guardar. Los cambios tardan unos minutos en aplicarse.
+
+La restricción por sitio web se puede falsificar desde fuera de un
+navegador: frena el abuso casual, pero la seguridad real siguen siendo las
+reglas del paso 5.
+
+**No activar otras APIs de Google en este proyecto** (Gemini, Maps, etc.).
+Si algún día se necesitan, crearlas en un proyecto aparte: esas sí pueden
+tener costo y no deben compartir clave con una app pública.
+
+## 7. Comprobar
 
 - Abrir la app en Netlify, entrar por `entrar.html` con el correo y la
   contraseña, escribir una nota y verla aparecer en
