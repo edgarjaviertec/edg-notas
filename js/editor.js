@@ -40,7 +40,8 @@ const TEMA_EDITOR = CodeMirror.EditorView.theme({
     ".cm-cursor, .cm-dropCursor": {
         borderLeftColor: "var(--color-acento)"
     },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {
+    // Mismo selector que el tema base de CodeMirror; si es menos específico, gana su color lila
+    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground": {
         backgroundColor: "var(--color-seleccion)"
     },
     ".cm-placeholder": {

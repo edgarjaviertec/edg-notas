@@ -11,7 +11,8 @@
     --color-borde: #d0d0d0;
     --color-resaltado: #dcdcdc;
     --color-seleccion: #cce4ff;
-    --color-linea-activa: #f5f5f5;
+    /* Translúcido: la selección se dibuja detrás de las líneas y un fondo opaco la taparía */
+    --color-linea-activa: rgba(0, 0, 0, 0.04);
     --color-acento: #1f8a3b;
     --color-acento-texto: #ffffff;
     --color-peligro: #c0392b;
@@ -74,7 +75,7 @@
         --color-borde: #1a1a1a;
         --color-resaltado: #3a3d41;
         --color-seleccion: #3a4b5c;
-        --color-linea-activa: #30353a;
+        --color-linea-activa: rgba(255, 255, 255, 0.03);
         --color-acento: #30d158;
         --color-acento-texto: #0b2913;
         --color-peligro: #d9534f;
