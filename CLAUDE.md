@@ -305,9 +305,17 @@ Todos con `Alt` (`Option` en Mac), porque el navegador no deja capturar
 ## PWA
 
 - `manifiesto.webmanifest` + `trabajador-servicio.js` en la raíz.
-- El service worker cachea todos los archivos de la app (incluidos
-  `js/externos/`) con un nombre de caché versionado; al cambiar archivos se
-  sube la versión.
+- Estrategia "stale-while-revalidate": responde con la caché al instante y
+  pide la versión nueva a la red para la siguiente visita. Un cambio
+  publicado llega en la segunda carga, sin tocar nada del service worker.
+- `ARCHIVOS_APP` se precarga al instalar. **Al agregar o quitar un archivo de
+  la app hay que actualizar esa lista**: si incluye uno que no existe, la
+  instalación falla entera. `firebase.js` queda fuera a propósito (la demo
+  nunca lo descarga); se guarda en caché la primera vez que se pide.
+- `VERSION_CACHE` solo se sube para borrar la caché vieja completa (por
+  ejemplo, al quitar archivos).
+- Iconos: `iconos/icono.svg` es el original; los PNG (180, 192, 512, sin
+  transparencia para iOS) se generan a partir de él.
 - En iPhone, instalada en la pantalla de inicio, queda exenta del borrado de
   datos a los 7 días de Safari.
 
@@ -362,8 +370,9 @@ legacy/                     # app de Python, ignorada por git
 - Servir desde la raíz del repo: `python3 -m http.server 8000` y abrir
   `http://localhost:8000`. No funciona abriendo `index.html` con doble clic
   (`file://` no admite service worker, y Firebase e IndexedDB fallan).
-- Si el service worker sirve archivos viejos: subir la versión de la caché o
-  usar "Update on reload" en las herramientas del navegador.
+- Por el service worker, un cambio se ve en la segunda recarga. Para verlo
+  en la primera: "Update on reload" en las herramientas del navegador
+  (Application > Service workers).
 - Netlify publica la raíz del repo tal cual, sin comando de build.
 
 ## Git

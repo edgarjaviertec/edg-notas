@@ -338,6 +338,17 @@ function manejarClicEnListas(evento) {
     }
 }
 
+async function exportarRespaldo() {
+    // Lo recién escrito aún no está en estado.notas hasta que se guarda
+    await guardarAhora();
+    try {
+        descargarRespaldo(estado.notas, new Date());
+    } catch (error) {
+        console.error(error);
+        pintarEstadoGuardado("No se pudo exportar el respaldo");
+    }
+}
+
 function manejarClicEnPestanas(evento) {
     const boton = evento.target.closest("[data-accion]");
     if (boton === null) {
@@ -383,6 +394,7 @@ function conectarEventos() {
     document.getElementById("boton-volver").addEventListener("click", volverALista);
     document.getElementById("boton-deshacer").addEventListener("click", deshacerEliminacion);
     document.getElementById("boton-reiniciar-demo").addEventListener("click", reiniciarDemoDesdeBoton);
+    document.getElementById("boton-exportar").addEventListener("click", exportarRespaldo);
 
     for (const boton of document.querySelectorAll(".barra-inferior-boton")) {
         boton.addEventListener("click", function () {
@@ -418,7 +430,18 @@ async function abrirNotaInicialEnEscritorio() {
     await crearNotaNueva();
 }
 
+// Falla en file:// y en navegadores sin soporte: la app funciona igual, solo que sin modo offline
+function registrarTrabajadorServicio() {
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+    navigator.serviceWorker.register("trabajador-servicio.js").catch(function (error) {
+        console.error(error);
+    });
+}
+
 async function arrancar() {
+    registrarTrabajadorServicio();
     pintarIconos();
     actualizarModoPantalla();
     crearEditor(document.getElementById("editor"), {

@@ -8,6 +8,9 @@
     <meta name="theme-color" content="#252526" media="(prefers-color-scheme: dark)">
     <title>EdgNotas</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <link rel="manifest" href="manifiesto.webmanifest">
+    <link rel="icon" href="iconos/icono.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="iconos/icono-180.png">
 </head>
 <body>
     <div class="aplicacion" id="aplicacion" data-pantalla="hoy">
@@ -78,7 +81,7 @@
             <span class="barra-estado-texto" id="estado-guardado"></span>
             <div class="barra-estado-acciones">
                 <button class="boton-texto" id="boton-reiniciar-demo" type="button" hidden>Reiniciar demo</button>
-                <button class="boton-texto" id="boton-exportar" type="button" hidden>Exportar respaldo</button>
+                <button class="boton-texto" id="boton-exportar" type="button">Exportar respaldo</button>
             </div>
         </footer>
 
@@ -160,6 +163,7 @@
     </template>
 
     <script src="js/externos/codemirror.js"></script>
+    <script src="js/externos/fflate.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/fechas.js"></script>
     <script src="js/notas.js"></script>
@@ -172,6 +176,7 @@
     <script src="js/buscador.js"></script>
     <script src="js/pestanas.js"></script>
     <script src="js/atajos.js"></script>
+    <script src="js/respaldo.js"></script>
     <script src="js/aplicacion.js"></script>
 </body>
 </html>
