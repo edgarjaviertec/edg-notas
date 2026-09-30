@@ -365,8 +365,6 @@ function alternarSemana() {
 function alCambiarModoPantalla() {
     actualizarModoPantalla();
     cambiarNumerosLinea(esEscritorio());
-    estado.tamanoFuenteEditor = leerTamanoFuenteGuardado();
-    cambiarTamanoFuenteEditor(estado.tamanoFuenteEditor);
 }
 
 async function reiniciarDemoDesdeBoton() {
@@ -611,6 +609,8 @@ async function arrancar() {
         }
     });
     cambiarNumerosLinea(esEscritorio());
+    estado.tamanoFuenteEditor = leerTamanoFuenteGuardado();
+    cambiarTamanoFuenteEditor(estado.tamanoFuenteEditor);
 
     iniciarAutoguardado(guardarNota);
     iniciarDeslizarParaEliminar();
