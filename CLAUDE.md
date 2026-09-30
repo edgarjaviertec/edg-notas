@@ -295,8 +295,9 @@ constante `ANCHO_ESCRITORIO` (768) en `configuracion.js` y el `@media` de
 
 ### Atajos (escritorio)
 
-Todos con `Alt` (`Option` en Mac), porque el navegador no deja capturar
-`Cmd+W`, `Cmd+T`, `Cmd+N` ni `Cmd+Shift+T`.
+Con `Alt` (`Option` en Mac), porque el navegador no deja capturar
+`Cmd+W`, `Cmd+T`, `Cmd+N` ni `Cmd+Shift+T`. Los de tamaño de letra van con
+`Cmd` (Mac) o `Ctrl` (Windows), como el zoom del navegador.
 
 | Atajo | Acción |
 |---|---|
@@ -304,12 +305,20 @@ Todos con `Alt` (`Option` en Mac), porque el navegador no deja capturar
 | `Alt+W` | Cerrar pestaña |
 | `Alt+Shift+T` | Reabrir la última pestaña cerrada |
 | `Alt+Shift+F` | Buscar en el texto de todas las notas |
+| `Cmd/Ctrl +` | Aumentar la letra del editor |
+| `Cmd/Ctrl -` | Reducir la letra del editor |
+| `Cmd/Ctrl 0` | Restablecer la letra del editor |
 
 - Detectar con `event.code` (`"KeyW"`), no con `event.key`: en Mac
   `Option+W` produce `"∑"`. Llamar a `preventDefault()`.
 - No usar `Alt+F` ni `Alt+E` sin Shift: en Chrome para Windows abren el menú
   del navegador.
-- El zoom lo maneja el navegador.
+- Los de tamaño de letra se detectan con `event.key` (`"+"`, `"="`, `"-"`,
+  `"0"`), no con `event.code`: en el teclado latinoamericano la tecla `+` no
+  es `"Equal"`. Reemplazan el zoom del navegador por teclado: solo cambia la
+  letra del editor (variable `--tamano-fuente-editor`, puesta en el propio
+  editor para no tocar los campos de texto). El tamaño se guarda en
+  `localStorage`, en cada dispositivo.
 
 ### Sin parpadeos
 

@@ -17,7 +17,8 @@ const estado = {
     contadorBorradores: 0,
     // Lo que se necesita para "Deshacer": eliminarNota vacía el contenido
     notaEliminada: null,
-    temporizadorAviso: null
+    temporizadorAviso: null,
+    tamanoFuenteEditor: TAMANO_FUENTE_EDITOR_BASE
 };
 
 const TEXTO_MODO_DEMO = "Modo demo · tus notas viven solo en este navegador y pueden borrarse";
@@ -364,6 +365,8 @@ function alternarSemana() {
 function alCambiarModoPantalla() {
     actualizarModoPantalla();
     cambiarNumerosLinea(esEscritorio());
+    estado.tamanoFuenteEditor = leerTamanoFuenteGuardado();
+    cambiarTamanoFuenteEditor(estado.tamanoFuenteEditor);
 }
 
 async function reiniciarDemoDesdeBoton() {
@@ -573,6 +576,27 @@ function registrarTrabajadorServicio() {
     });
 }
 
+// Se guarda en cada dispositivo: en el celular no tiene por qué ser el mismo que en la computadora
+function leerTamanoFuenteGuardado() {
+    const tamano = Number(localStorage.getItem(CLAVE_TAMANO_FUENTE_EDITOR));
+    if (Number.isNaN(tamano)) {
+        return TAMANO_FUENTE_EDITOR_BASE;
+    }
+    if (tamano < TAMANO_FUENTE_EDITOR_MINIMO || tamano > TAMANO_FUENTE_EDITOR_MAXIMO) {
+        return TAMANO_FUENTE_EDITOR_BASE;
+    }
+    return tamano;
+}
+
+function fijarTamanoFuenteEditor(tamano) {
+    if (tamano < TAMANO_FUENTE_EDITOR_MINIMO || tamano > TAMANO_FUENTE_EDITOR_MAXIMO) {
+        return;
+    }
+    estado.tamanoFuenteEditor = tamano;
+    localStorage.setItem(CLAVE_TAMANO_FUENTE_EDITOR, String(tamano));
+    cambiarTamanoFuenteEditor(tamano);
+}
+
 async function arrancar() {
     registrarTrabajadorServicio();
     pintarIconos();
@@ -594,7 +618,16 @@ async function arrancar() {
         nuevaNota: crearNotaNueva,
         cerrarPestana: cerrarPestanaActiva,
         reabrirPestana: reabrirPestanaCerrada,
-        buscar: abrirBuscadorDeNotas
+        buscar: abrirBuscadorDeNotas,
+        aumentarFuente: function () {
+            fijarTamanoFuenteEditor(estado.tamanoFuenteEditor + PASO_TAMANO_FUENTE_EDITOR);
+        },
+        reducirFuente: function () {
+            fijarTamanoFuenteEditor(estado.tamanoFuenteEditor - PASO_TAMANO_FUENTE_EDITOR);
+        },
+        restablecerFuente: function () {
+            fijarTamanoFuenteEditor(TAMANO_FUENTE_EDITOR_BASE);
+        }
     });
     conectarEventos();
 

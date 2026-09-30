@@ -15,6 +15,12 @@ const ICONOS = {
 // Debe coincidir con el @media (min-width: 768px) de css/estilos.css
 const ANCHO_ESCRITORIO = 768;
 
+// Tamaño de letra del editor, en px. La base debe coincidir con --tamano-texto-editor de css/estilos.css
+const TAMANO_FUENTE_EDITOR_BASE = 16;
+const TAMANO_FUENTE_EDITOR_MINIMO = 10;
+const TAMANO_FUENTE_EDITOR_MAXIMO = 32;
+const PASO_TAMANO_FUENTE_EDITOR = 1;
+
 const ESPERA_AUTOGUARDADO_MS = 2000;
 // Aunque no se deje de teclear, se fuerza una escritura cada este tiempo
 const TECHO_AUTOGUARDADO_MS = 10000;
@@ -31,6 +37,7 @@ const RUTA_SCRIPT_FIREBASE = "js/externos/firebase.js";
 
 const CLAVE_ULTIMA_SINCRONIZACION = "edg-notas:ultima-sincronizacion";
 const CLAVE_ULTIMO_MODO = "edg-notas:ultimo-modo";
+const CLAVE_TAMANO_FUENTE_EDITOR = "edg-notas:tamano-fuente-editor";
 
 // Valores públicos por diseño: la seguridad está en reglas-firestore.rules.
 // Se llenan al crear el proyecto (ver configurar-firebase.md). Las claves las define Firebase.

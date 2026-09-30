@@ -3,8 +3,10 @@
 
 let vistaEditor = null;
 let mostrarNumerosLinea = true;
+let tamanoFuenteEditor = TAMANO_FUENTE_EDITOR_BASE;
 let opcionesEditor = null;
 const compartimentoNumerosLinea = new CodeMirror.Compartment();
+const compartimentoTamanoFuente = new CodeMirror.Compartment();
 
 // Solo variables de estilos.css: el tema claro/oscuro cambia sin tocar JS.
 // Va aquí y no en el CSS porque los estilos que inyecta CodeMirror ganan en especificidad.
@@ -13,7 +15,7 @@ const TEMA_EDITOR = CodeMirror.EditorView.theme({
         height: "100%",
         color: "var(--color-texto)",
         backgroundColor: "var(--color-fondo)",
-        fontSize: "var(--tamano-texto-editor)"
+        fontSize: "var(--tamano-fuente-editor)"
     },
     "&.cm-focused": {
         outline: "none"
@@ -56,6 +58,16 @@ function crearExtensionNumerosLinea(mostrar) {
     return [CodeMirror.lineNumbers(), CodeMirror.highlightActiveLineGutter()];
 }
 
+// Va en un tema y no en un estilo suelto: cambiar el tema es lo que obliga a CodeMirror a
+// volver a medir las líneas. Si no, los números de línea se quedan con el alto anterior.
+function crearTemaTamanoFuente(tamano) {
+    return CodeMirror.EditorView.theme({
+        "&": {
+            "--tamano-fuente-editor": tamano + "px"
+        }
+    });
+}
+
 function crearEstadoEditor(contenido) {
     const atajos = [...CodeMirror.defaultKeymap, ...CodeMirror.historyKeymap, CodeMirror.indentWithTab];
 
@@ -63,6 +75,7 @@ function crearEstadoEditor(contenido) {
         doc: contenido,
         extensions: [
             compartimentoNumerosLinea.of(crearExtensionNumerosLinea(mostrarNumerosLinea)),
+            compartimentoTamanoFuente.of(crearTemaTamanoFuente(tamanoFuenteEditor)),
             CodeMirror.history(),
             CodeMirror.drawSelection(),
             CodeMirror.highlightActiveLine(),
@@ -120,5 +133,13 @@ function cambiarNumerosLinea(mostrar) {
     mostrarNumerosLinea = mostrar;
     vistaEditor.dispatch({
         effects: compartimentoNumerosLinea.reconfigure(crearExtensionNumerosLinea(mostrar))
+    });
+}
+
+// La variable se pone en el propio editor para no cambiar el tamaño de los campos de texto
+function cambiarTamanoFuenteEditor(tamano) {
+    tamanoFuenteEditor = tamano;
+    vistaEditor.dispatch({
+        effects: compartimentoTamanoFuente.reconfigure(crearTemaTamanoFuente(tamano))
     });
 }

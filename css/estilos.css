@@ -27,6 +27,8 @@
     --tamano-texto-diminuto: 11px;
     /* 16px como mínimo en campos: con menos, Safari iOS hace zoom al enfocarlos */
     --tamano-texto-editor: 16px;
+    /* JS la cambia en el editor con Cmd/Ctrl + y -; los campos no la usan */
+    --tamano-fuente-editor: var(--tamano-texto-editor);
     --tamano-titulo: 28px;
     --interlineado-editor: 1.6;
     --tamano-icono: 20px;
