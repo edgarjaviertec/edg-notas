@@ -305,6 +305,7 @@ Con `Alt` (`Option` en Mac), porque el navegador no deja capturar
 | `Alt+W` | Cerrar pestaña |
 | `Alt+Shift+T` | Reabrir la última pestaña cerrada |
 | `Alt+Shift+F` | Buscar en el texto de todas las notas |
+| `Alt+Z` | Activar o desactivar el ajuste de línea |
 | `Cmd/Ctrl +` | Aumentar la letra del editor |
 | `Cmd/Ctrl -` | Reducir la letra del editor |
 | `Cmd/Ctrl 0` | Restablecer la letra del editor |
@@ -319,6 +320,8 @@ Con `Alt` (`Option` en Mac), porque el navegador no deja capturar
   letra del editor (variable `--tamano-fuente-editor`, puesta en el propio
   editor para no tocar los campos de texto). El tamaño se guarda en
   `localStorage`, en cada dispositivo.
+- El ajuste de línea arranca activado y se recuerda en `localStorage`, en cada
+  dispositivo. En móvil siempre está activado.
 
 ### Sin parpadeos
 

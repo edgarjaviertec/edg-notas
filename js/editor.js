@@ -4,9 +4,11 @@
 let vistaEditor = null;
 let mostrarNumerosLinea = true;
 let tamanoFuenteEditor = TAMANO_FUENTE_EDITOR_BASE;
+let tieneAjusteLinea = true;
 let opcionesEditor = null;
 const compartimentoNumerosLinea = new CodeMirror.Compartment();
 const compartimentoTamanoFuente = new CodeMirror.Compartment();
+const compartimentoAjusteLinea = new CodeMirror.Compartment();
 
 // Solo variables de estilos.css: el tema claro/oscuro cambia sin tocar JS.
 // Va aquí y no en el CSS porque los estilos que inyecta CodeMirror ganan en especificidad.
@@ -58,6 +60,13 @@ function crearExtensionNumerosLinea(mostrar) {
     return [CodeMirror.lineNumbers(), CodeMirror.highlightActiveLineGutter()];
 }
 
+function crearExtensionAjusteLinea(ajustar) {
+    if (!ajustar) {
+        return [];
+    }
+    return CodeMirror.EditorView.lineWrapping;
+}
+
 // Va en un tema y no en un estilo suelto: cambiar el tema es lo que obliga a CodeMirror a
 // volver a medir las líneas. Si no, los números de línea se quedan con el alto anterior.
 function crearTemaTamanoFuente(tamano) {
@@ -80,7 +89,7 @@ function crearEstadoEditor(contenido) {
             CodeMirror.drawSelection(),
             CodeMirror.highlightActiveLine(),
             CodeMirror.keymap.of(atajos),
-            CodeMirror.EditorView.lineWrapping,
+            compartimentoAjusteLinea.of(crearExtensionAjusteLinea(tieneAjusteLinea)),
             CodeMirror.placeholder("Escribe aquí…"),
             TEMA_EDITOR,
             // setState() no dispara este aviso: solo lo hace lo que escribe el usuario
@@ -141,5 +150,12 @@ function cambiarTamanoFuenteEditor(tamano) {
     tamanoFuenteEditor = tamano;
     vistaEditor.dispatch({
         effects: compartimentoTamanoFuente.reconfigure(crearTemaTamanoFuente(tamano))
+    });
+}
+
+function cambiarAjusteLinea(ajustar) {
+    tieneAjusteLinea = ajustar;
+    vistaEditor.dispatch({
+        effects: compartimentoAjusteLinea.reconfigure(crearExtensionAjusteLinea(ajustar))
     });
 }

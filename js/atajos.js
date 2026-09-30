@@ -7,7 +7,8 @@ const ATAJOS = [
     { codigo: "KeyN", conShift: false, accion: "nuevaNota" },
     { codigo: "KeyW", conShift: false, accion: "cerrarPestana" },
     { codigo: "KeyT", conShift: true, accion: "reabrirPestana" },
-    { codigo: "KeyF", conShift: true, accion: "buscar" }
+    { codigo: "KeyF", conShift: true, accion: "buscar" },
+    { codigo: "KeyZ", conShift: false, accion: "alternarAjusteLinea" }
 ];
 
 // Tamaño de letra del editor, con Cmd (Mac) o Ctrl (Windows), como el zoom del navegador.

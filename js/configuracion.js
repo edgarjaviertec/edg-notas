@@ -38,6 +38,7 @@ const RUTA_SCRIPT_FIREBASE = "js/externos/firebase.js";
 const CLAVE_ULTIMA_SINCRONIZACION = "edg-notas:ultima-sincronizacion";
 const CLAVE_ULTIMO_MODO = "edg-notas:ultimo-modo";
 const CLAVE_TAMANO_FUENTE_EDITOR = "edg-notas:tamano-fuente-editor";
+const CLAVE_AJUSTE_LINEA = "edg-notas:ajuste-linea";
 
 // Valores públicos por diseño: la seguridad está en reglas-firestore.rules.
 // Se llenan al crear el proyecto (ver configurar-firebase.md). Las claves las define Firebase.

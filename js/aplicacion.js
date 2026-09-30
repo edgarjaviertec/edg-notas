@@ -18,7 +18,9 @@ const estado = {
     // Lo que se necesita para "Deshacer": eliminarNota vacía el contenido
     notaEliminada: null,
     temporizadorAviso: null,
-    tamanoFuenteEditor: TAMANO_FUENTE_EDITOR_BASE
+    tamanoFuenteEditor: TAMANO_FUENTE_EDITOR_BASE,
+    // Preferencia de escritorio: en móvil las líneas siempre se ajustan
+    tieneAjusteLinea: true
 };
 
 const TEXTO_MODO_DEMO = "Modo demo · tus notas viven solo en este navegador y pueden borrarse";
@@ -365,6 +367,7 @@ function alternarSemana() {
 function alCambiarModoPantalla() {
     actualizarModoPantalla();
     cambiarNumerosLinea(esEscritorio());
+    aplicarAjusteLinea();
 }
 
 async function reiniciarDemoDesdeBoton() {
@@ -595,6 +598,29 @@ function fijarTamanoFuenteEditor(tamano) {
     cambiarTamanoFuenteEditor(tamano);
 }
 
+// Sin valor guardado queda activado
+function leerAjusteLineaGuardado() {
+    return localStorage.getItem(CLAVE_AJUSTE_LINEA) !== "desactivado";
+}
+
+// En móvil siempre se ajusta: la pantalla es angosta y no hay atajo para volver a activarlo
+function aplicarAjusteLinea() {
+    cambiarAjusteLinea(estado.tieneAjusteLinea || !esEscritorio());
+}
+
+function alternarAjusteLinea() {
+    if (!esEscritorio()) {
+        return;
+    }
+    estado.tieneAjusteLinea = !estado.tieneAjusteLinea;
+    if (estado.tieneAjusteLinea) {
+        localStorage.setItem(CLAVE_AJUSTE_LINEA, "activado");
+    } else {
+        localStorage.setItem(CLAVE_AJUSTE_LINEA, "desactivado");
+    }
+    aplicarAjusteLinea();
+}
+
 async function arrancar() {
     registrarTrabajadorServicio();
     pintarIconos();
@@ -611,6 +637,8 @@ async function arrancar() {
     cambiarNumerosLinea(esEscritorio());
     estado.tamanoFuenteEditor = leerTamanoFuenteGuardado();
     cambiarTamanoFuenteEditor(estado.tamanoFuenteEditor);
+    estado.tieneAjusteLinea = leerAjusteLineaGuardado();
+    aplicarAjusteLinea();
 
     iniciarAutoguardado(guardarNota);
     iniciarDeslizarParaEliminar();
@@ -619,6 +647,7 @@ async function arrancar() {
         cerrarPestana: cerrarPestanaActiva,
         reabrirPestana: reabrirPestanaCerrada,
         buscar: abrirBuscadorDeNotas,
+        alternarAjusteLinea: alternarAjusteLinea,
         aumentarFuente: function () {
             fijarTamanoFuenteEditor(estado.tamanoFuenteEditor + PASO_TAMANO_FUENTE_EDITOR);
         },
