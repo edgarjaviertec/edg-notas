@@ -784,8 +784,10 @@ dialog {
         padding-left: var(--espacio-3);
     }
 
+    /* Con overflow, su altura mínima es 0 y una nota larga la aplasta. */
     .pestanas {
         display: flex;
+        flex-shrink: 0;
         overflow-x: auto;
         border-bottom: var(--grosor-borde) solid var(--color-borde);
         background-color: var(--color-fondo-lateral);
